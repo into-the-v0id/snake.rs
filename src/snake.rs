@@ -29,6 +29,13 @@ impl Snake {
 	}
 
 	pub fn update(&mut self) -> tetra::Result {
+		let head = &mut self.head;
+		let mut tiles = self.tail.iter_mut().rev().peekable();
+		while let Some(mut tile) = tiles.next() {
+			let prev_tile = tiles.peek().unwrap_or(&head);
+			tile.position = prev_tile.position;
+		}
+
 		match self.direction {
 			Direction::Up => self.head.position.y -= 1,
 			Direction::Down => self.head.position.y += 1,
@@ -42,6 +49,26 @@ impl Snake {
 	pub fn draw(&self, ctx: &mut Context) -> tetra::Result {
 		self.head.draw(ctx)?;
 
+		for tile in &self.tail {
+			tile.draw(ctx)?;
+		}
+
 		Ok(())
+	}
+
+	pub fn grow_tail(&mut self) {
+		let last_tile = self.tail.last().unwrap_or(&self.head);
+
+		let mut x = last_tile.position.x;
+		let mut y = last_tile.position.y;
+
+		match self.direction {
+			Direction::Up => y += 1,
+			Direction::Down => y -= 1,
+			Direction::Left => x += 1,
+			Direction::Right => x -= 1,
+		}
+
+		self.tail.push(Tile::new(x, y));
 	}
 }
