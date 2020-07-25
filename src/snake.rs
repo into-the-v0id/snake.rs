@@ -2,7 +2,7 @@ use crate::tile::Tile;
 use crate::config;
 use tetra::Context;
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Copy, Clone)]
 pub enum Direction {
 	Up,
 	Down,

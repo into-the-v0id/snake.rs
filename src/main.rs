@@ -14,7 +14,7 @@ mod background;
 mod snake;
 mod tile;
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Copy, Clone)]
 enum ContextState {
     Updated,
     Drawn,
@@ -28,6 +28,7 @@ struct GameState {
     pub snake: Snake,
     snake_canvas: graphics::Canvas,
     snake_state: ContextState,
+    snake_direction_queue: Option<Direction>,
 }
 
 impl GameState {
@@ -39,13 +40,19 @@ impl GameState {
 
             snake: Snake::new(),
             snake_canvas: graphics::Canvas::new(ctx, PLAYGROUND_SIZE_X as i32, PLAYGROUND_SIZE_Y as i32)?,
-            snake_state: ContextState::Updated
+            snake_state: ContextState::Updated,
+            snake_direction_queue: None
         })
     }
 }
 
 impl TetraState for GameState {
     fn update(&mut self, _ctx: &mut Context) -> tetra::Result {
+        if let Some(direction) = self.snake_direction_queue {
+            self.snake.direction = direction;
+            self.snake_direction_queue = None;
+        }
+
         self.snake.update()?;
         self.snake_state = ContextState::Updated;
 
@@ -86,10 +93,18 @@ impl TetraState for GameState {
         match event {
             Event::KeyPressed { key } => {
                 match key {
-                    Key::W | Key::Up if self.snake.direction != Direction::Down => self.snake.direction = Direction::Up,
-                    Key::S | Key::Down if self.snake.direction != Direction::Up => self.snake.direction = Direction::Down,
-                    Key::A | Key::Left if self.snake.direction != Direction::Right => self.snake.direction = Direction::Left,
-                    Key::D | Key::Right if self.snake.direction != Direction::Left => self.snake.direction = Direction::Right,
+                    Key::W | Key::Up if self.snake.direction != Direction::Down => {
+                        self.snake_direction_queue = Some(Direction::Up);
+                    }
+                    Key::S | Key::Down if self.snake.direction != Direction::Up => {
+                        self.snake_direction_queue = Some(Direction::Down);
+                    }
+                    Key::A | Key::Left if self.snake.direction != Direction::Right => {
+                        self.snake_direction_queue = Some(Direction::Left);
+                    }
+                    Key::D | Key::Right if self.snake.direction != Direction::Left => {
+                        self.snake_direction_queue = Some(Direction::Right);
+                    }
                     _ => {}
                 }
             }
