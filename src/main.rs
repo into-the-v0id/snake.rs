@@ -64,7 +64,7 @@ impl TetraState for GameState {
 
         if self.background_state == ContextState::Updated {
             graphics::set_canvas(ctx, &self.background_canvas);
-            graphics::clear(ctx, Color::rgba(0, 0, 0, 0.0).into());
+            graphics::clear(ctx, Color::transparent().into());
             self.background.draw(ctx)?;
             graphics::reset_canvas(ctx);
 
@@ -74,7 +74,7 @@ impl TetraState for GameState {
 
         if self.snake_state == ContextState::Updated {
             graphics::set_canvas(ctx, &self.snake_canvas);
-            graphics::clear(ctx, Color::rgba(0, 0, 0, 0.0).into());
+            graphics::clear(ctx, Color::transparent().into());
             self.snake.draw(ctx)?;
             graphics::reset_canvas(ctx);
 

@@ -16,6 +16,10 @@ impl Color {
 	pub fn rgba(r: u8, g: u8, b: u8, a: f32) -> Color {
 		Color(TetraColor::rgba8(r, g, b, (a * 255.0).round() as u8))
 	}
+
+	pub fn transparent() -> Color {
+		Color::rgba(0, 0, 0, 0.0)
+	}
 }
 
 impl From<config::Color> for Color {
