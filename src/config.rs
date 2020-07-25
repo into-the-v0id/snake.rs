@@ -1,9 +1,9 @@
 pub type Color = (u8, u8, u8, f32);
 
 
-pub const TILE_SIZE: u16 = 25;
-pub const TILE_COUNT_X: u16 = 30;
-pub const TILE_COUNT_Y: u16 = 18;
+pub const TILE_SIZE: u16 = 50;
+pub const TILE_COUNT_X: u16 = 15;
+pub const TILE_COUNT_Y: u16 = 9;
 
 pub const SNAKE_BODY_COLOR: Color = (25, 200, 50, 1.0);
 

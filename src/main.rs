@@ -126,7 +126,7 @@ fn main() -> tetra::Result {
         WINDOW_SIZE_X as i32,
         WINDOW_SIZE_Y as i32
     )
-        .timestep(Timestep::Fixed(2.5))
+        .timestep(Timestep::Fixed(3.0))
         .show_mouse(true)
         .build()?
         .run(GameState::factory)
