@@ -30,6 +30,16 @@ impl Snake {
 		}
 	}
 
+	pub fn draw(&self, ctx: &mut Context) -> tetra::Result {
+		for tile in &self.tail {
+			tile.draw(ctx)?;
+		}
+
+		self.head.draw(ctx)?;
+
+		Ok(())
+	}
+
 	pub fn move_forward(&mut self) -> tetra::Result {
 		let head = &mut self.head;
 		let mut tiles = self.tail.iter_mut().rev().peekable();
@@ -44,16 +54,6 @@ impl Snake {
 			Direction::Left => self.head.position.x -= 1,
 			Direction::Right => self.head.position.x += 1,
 		}
-
-		Ok(())
-	}
-
-	pub fn draw(&self, ctx: &mut Context) -> tetra::Result {
-		for tile in &self.tail {
-			tile.draw(ctx)?;
-		}
-
-		self.head.draw(ctx)?;
 
 		Ok(())
 	}
