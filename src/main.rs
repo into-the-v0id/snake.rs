@@ -53,7 +53,7 @@ impl TetraState for GameState {
             self.snake_direction_queue = None;
         }
 
-        self.snake.update()?;
+        self.snake.move_forward()?;
         self.snake_state = ContextState::Updated;
 
         Ok(())

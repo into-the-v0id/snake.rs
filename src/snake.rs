@@ -30,7 +30,7 @@ impl Snake {
 		}
 	}
 
-	pub fn update(&mut self) -> tetra::Result {
+	pub fn move_forward(&mut self) -> tetra::Result {
 		let head = &mut self.head;
 		let mut tiles = self.tail.iter_mut().rev().peekable();
 		while let Some(mut tile) = tiles.next() {
