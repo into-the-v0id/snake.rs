@@ -6,15 +6,15 @@ use crate::config;
 use crate::color::Color;
 
 pub struct Tile {
-	pub position: Vec2<u16>,
+	pub position: Vec2<i32>,
 	pub color: Color,
 }
 
 impl Tile {
-	pub fn new(x: u16, y: u16) -> Tile {
+	pub fn new(x: i32, y: i32, color: Color) -> Tile {
 		Tile {
 			position: Vec2::new(x, y),
-			color: Color::from(config::SNAKE_BODY_COLOR),
+			color,
 		}
 	}
 
@@ -31,8 +31,8 @@ impl Tile {
 			DrawParams::new()
 				.scale(Vec2::new(tile_size, tile_size))
 				.position(Vec2::new(
-					(self.position.x * config::TILE_SIZE) as f32 + margin_size,
-					(self.position.y * config::TILE_SIZE) as f32 + margin_size
+					(self.position.x * config::TILE_SIZE as i32) as f32 + margin_size,
+					(self.position.y * config::TILE_SIZE as i32) as f32 + margin_size
 				))
 				.color((&self.color).into())
 		);

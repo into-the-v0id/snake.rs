@@ -1,6 +1,7 @@
 use crate::tile::Tile;
 use crate::config;
 use tetra::Context;
+use crate::color::Color;
 
 #[derive(Eq, PartialEq, Copy, Clone)]
 pub enum Direction {
@@ -20,8 +21,9 @@ impl Snake {
 	pub fn new() -> Snake {
 		Snake {
 			head: Tile::new(
-				((config::TILE_COUNT_X - 1) as f32 / 2.0).floor() as u16,
-				((config::TILE_COUNT_Y - 1) as f32 / 2.0).floor() as u16
+				((config::TILE_COUNT_X - 1) as f32 / 2.0).floor() as i32,
+				((config::TILE_COUNT_Y - 1) as f32 / 2.0).floor() as i32,
+				Color::from(config::SNAKE_HEAD_COLOR)
 			),
 			tail: Vec::new(),
 			direction: Direction::Up,
@@ -47,11 +49,11 @@ impl Snake {
 	}
 
 	pub fn draw(&self, ctx: &mut Context) -> tetra::Result {
-		self.head.draw(ctx)?;
-
 		for tile in &self.tail {
 			tile.draw(ctx)?;
 		}
+
+		self.head.draw(ctx)?;
 
 		Ok(())
 	}
@@ -69,6 +71,7 @@ impl Snake {
 			Direction::Right => x -= 1,
 		}
 
-		self.tail.push(Tile::new(x, y));
+		let tile = Tile::new(x, y, Color::from(config::SNAKE_TAIL_COLOR));
+		self.tail.push(tile);
 	}
 }
