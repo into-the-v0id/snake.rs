@@ -11,3 +11,6 @@ pub const SNAKE_TAIL_COLOR: Color = (25, 200, 50, 1.0);
 pub const PLAYGROUND_GROUND_COLOR: Color = (198, 198, 198, 1.0);
 pub const PLAYGROUND_WALL_WIDTH: u16 = 5;
 pub const PLAYGROUND_WALL_COLOR: Color = (56, 56, 56, 1.0);
+
+pub const ALERT_BACKGROUND_COLOR: Color = (0, 0, 0, 0.75);
+pub const ALERT_FONT_COLOR: Color = (255, 255, 255, 1.0);
