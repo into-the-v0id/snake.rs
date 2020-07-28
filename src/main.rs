@@ -26,6 +26,7 @@ enum ContextState {
 struct GameState {
     pub is_locked: bool,
     pub is_paused: bool,
+    pub is_game_over: bool,
 
     pub background: Background,
     background_canvas: graphics::Canvas,
@@ -39,6 +40,10 @@ struct GameState {
     pub pause_alert: Alert,
     pause_alert_canvas: graphics::Canvas,
     pause_alert_state: ContextState,
+
+    pub game_over_alert: Alert,
+    game_over_alert_canvas: graphics::Canvas,
+    game_over_alert_state: ContextState,
 }
 
 impl GameState {
@@ -46,6 +51,7 @@ impl GameState {
         tetra::Result::Ok(GameState {
             is_locked: false,
             is_paused: false,
+            is_game_over: false,
 
             background: Background,
             background_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
@@ -59,6 +65,10 @@ impl GameState {
             pause_alert: Alert::try_new("Paused", "Press 'ESC' to resume")?,
             pause_alert_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
             pause_alert_state: ContextState::Updated,
+
+            game_over_alert: Alert::try_new("Game over", "Press 'R' to restart")?,
+            game_over_alert_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+            game_over_alert_state: ContextState::Updated,
         })
     }
 
@@ -70,6 +80,20 @@ impl GameState {
     pub fn resume(&mut self) {
         self.is_paused = false;
         self.is_locked = false;
+    }
+
+    pub fn game_over(&mut self) {
+        self.is_game_over = true;
+        self.is_locked = true;
+    }
+
+    pub fn restart(&mut self) {
+        self.is_game_over = false;
+        self.is_paused = false;
+        self.is_locked = false;
+
+        self.snake = Snake::new();
+        self.snake_state = ContextState::Updated;
     }
 }
 
@@ -83,8 +107,15 @@ impl TetraState for GameState {
             self.snake.direction = direction;
             self.snake_direction_queue = None;
         }
-        self.snake.move_forward()?;
-        self.snake_state = ContextState::Updated;
+
+        let mut snake_clone = self.snake.clone();
+        snake_clone.move_forward()?;
+        if snake_clone.head_collides() {
+            self.game_over();
+        } else {
+            self.snake = snake_clone;
+            self.snake_state = ContextState::Updated;
+        }
 
         Ok(())
     }
@@ -115,6 +146,18 @@ impl TetraState for GameState {
             &self.snake_canvas,
             Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
         );
+
+        if self.is_game_over {
+            if self.game_over_alert_state == ContextState::Updated {
+                graphics::set_canvas(ctx, &self.game_over_alert_canvas);
+                graphics::clear(ctx, Color::transparent().into());
+                self.game_over_alert.draw(ctx)?;
+                graphics::reset_canvas(ctx);
+
+                self.game_over_alert_state = ContextState::Drawn;
+            }
+            graphics::draw(ctx, &self.game_over_alert_canvas, Vec2::new(0.0, 0.0));
+        }
 
         if self.is_paused {
             if self.pause_alert_state == ContextState::Updated {
@@ -155,27 +198,47 @@ impl TetraState for GameState {
             }
         }
 
-        match event {
-            Event::KeyPressed { key } => {
-                match key {
-                    Key::Escape => {
-                        if self.is_paused {
-                            self.resume();
-                        } else {
-                            self.pause();
-                        }
-                    },
-                    _ => {}
+        if self.is_game_over == false {
+            match event {
+                Event::KeyPressed { key } => {
+                    match key {
+                        Key::Escape => {
+                            if self.is_paused {
+                                self.resume();
+                            } else {
+                                self.pause();
+                            }
+                        },
+                        _ => {}
+                    }
                 }
-            }
-            Event::MouseButtonPressed { button } => {
-                match button {
-                    MouseButton::Left if self.is_paused => { self.resume(); }
-                    _ => {}
+                Event::MouseButtonPressed { button } => {
+                    match button {
+                        MouseButton::Left if self.is_paused => { self.resume(); }
+                        _ => {}
+                    }
                 }
+                Event::FocusLost => { self.pause(); }
+                _ => {}
             }
-            Event::FocusLost => { self.pause(); }
-            _ => {}
+        }
+
+        if self.is_game_over {
+            match event {
+                Event::KeyPressed { key } => {
+                    match key {
+                        Key::R => { self.restart(); },
+                        _ => {}
+                    }
+                }
+                Event::MouseButtonPressed { button } => {
+                    match button {
+                        MouseButton::Left => { self.restart(); }
+                        _ => {}
+                    }
+                }
+                _ => {}
+            }
         }
 
         Ok(())

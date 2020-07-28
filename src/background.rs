@@ -5,6 +5,7 @@ use tetra::math::Vec2;
 use crate::color::Color;
 use tetra::graphics::DrawParams;
 
+#[derive(Clone)]
 pub struct Background;
 
 impl Background {

@@ -1,6 +1,7 @@
 use tetra::graphics::Color as TetraColor;
 use crate::config;
 
+#[derive(Clone)]
 pub struct Color(TetraColor);
 
 impl Color {

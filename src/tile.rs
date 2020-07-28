@@ -5,6 +5,7 @@ use tetra::Context;
 use crate::config;
 use crate::color::Color;
 
+#[derive(Clone)]
 pub struct Tile {
 	pub position: Vec2<i32>,
 	pub color: Color,

@@ -11,6 +11,7 @@ pub enum Direction {
 	Right,
 }
 
+#[derive(Clone)]
 pub struct Snake {
 	pub head: Tile,
 	pub tail: Vec<Tile>,
@@ -31,7 +32,7 @@ impl Snake {
 	}
 
 	pub fn draw(&self, ctx: &mut Context) -> tetra::Result {
-		for tile in &self.tail {
+		for tile in self.tail.iter() {
 			tile.draw(ctx)?;
 		}
 
@@ -73,5 +74,27 @@ impl Snake {
 
 		let tile = Tile::new(x, y, Color::from(config::SNAKE_TAIL_COLOR));
 		self.tail.push(tile);
+	}
+
+	pub fn head_collides(&self) -> bool {
+		return self.head_is_out_of_bounds() || self.head_is_on_tail();
+	}
+
+	fn head_is_out_of_bounds(&self) -> bool {
+		let x = self.head.position.x;
+		let y = self.head.position.y;
+
+		return x < 0 || x > (config::TILE_COUNT_X - 1) as i32
+			|| y < 0 || y > (config::TILE_COUNT_Y - 1) as i32;
+	}
+
+	fn head_is_on_tail(&self) -> bool {
+		for tile in self.tail.iter() {
+			if tile.position == self.head.position {
+				return true;
+			}
+		}
+
+		false
 	}
 }

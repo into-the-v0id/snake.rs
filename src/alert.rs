@@ -6,6 +6,7 @@ use tetra::math::Vec2;
 use crate::color::Color;
 use tetra::graphics::DrawParams;
 
+#[derive(Clone)]
 pub struct Alert {
 	pub title: &'static str,
 	pub description: Option<&'static str>,
