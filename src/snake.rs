@@ -22,8 +22,8 @@ impl Snake {
 	pub fn new() -> Snake {
 		Snake {
 			head: Tile::new(
-				((config::TILE_COUNT_X - 1) as f32 / 2.0).floor() as i32,
-				((config::TILE_COUNT_Y - 1) as f32 / 2.0).floor() as i32,
+				((config::TILE_COUNT_X - 1) as f32 * 0.5).floor() as i32,
+				((config::TILE_COUNT_Y - 1) as f32 * 0.65).floor() as i32,
 				Color::from(config::SNAKE_HEAD_COLOR)
 			),
 			tail: Vec::new(),
