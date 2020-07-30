@@ -77,15 +77,15 @@ impl Snake {
 	}
 
 	pub fn head_collides(&self) -> bool {
-		return self.head_is_out_of_bounds() || self.head_is_on_tail();
+		self.head_is_out_of_bounds() || self.head_is_on_tail()
 	}
 
 	fn head_is_out_of_bounds(&self) -> bool {
 		let x = self.head.position.x;
 		let y = self.head.position.y;
 
-		return x < 0 || x > (config::TILE_COUNT_X - 1) as i32
-			|| y < 0 || y > (config::TILE_COUNT_Y - 1) as i32;
+		x < 0 || x > (config::TILE_COUNT_X - 1) as i32
+			|| y < 0 || y > (config::TILE_COUNT_Y - 1) as i32
 	}
 
 	fn head_is_on_tail(&self) -> bool {
