@@ -175,7 +175,7 @@ impl TetraState for GameState {
     }
 
     fn event(&mut self, _ctx: &mut Context, event: Event) -> tetra::Result {
-        if self.is_locked == false {
+        if ! self.is_locked {
             match event {
                 Event::KeyPressed { key } => {
                     match key {
@@ -191,43 +191,46 @@ impl TetraState for GameState {
                         Key::D | Key::Right if self.snake.direction != Direction::Left => {
                             self.snake_direction_queue = Some(Direction::Right);
                         }
-                        _ => {}
-                    }
-                }
-                _ => {}
-            }
-        }
-
-        if self.is_game_over == false {
-            match event {
-                Event::KeyPressed { key } => {
-                    match key {
-                        Key::Escape => {
-                            if self.is_paused {
-                                self.resume();
-                            } else {
-                                self.pause();
-                            }
-                        },
-                        _ => {}
-                    }
-                }
-                Event::MouseButtonPressed { button } => {
-                    match button {
-                        MouseButton::Left if self.is_paused => { self.resume(); }
+                        Key::Escape | Key::P => { self.pause(); }
                         _ => {}
                     }
                 }
                 Event::FocusLost => { self.pause(); }
                 _ => {}
             }
+
+            return Ok(());
+        }
+
+        if self.is_paused {
+            match event {
+                Event::KeyPressed { key } => {
+                    match key {
+                        Key::Escape | Key::P | Key::Space | Key::Enter | Key::NumPadEnter => {
+                            self.resume();
+                        }
+                        _ => {}
+                    }
+                }
+                Event::MouseButtonPressed { button } => {
+                    match button {
+                        MouseButton::Left => { self.resume(); }
+                        _ => {}
+                    }
+                }
+                _ => {}
+            }
+
+            return Ok(());
         }
 
         if self.is_game_over {
             match event {
                 Event::KeyPressed { key } => {
                     match key {
-                        Key::R => { self.restart(); },
+                        Key::R | Key::Space | Key::Enter | Key::NumPadEnter => {
+                            self.restart();
+                        }
                         _ => {}
                     }
                 }
@@ -239,6 +242,8 @@ impl TetraState for GameState {
                 }
                 _ => {}
             }
+
+            return Ok(());
         }
 
         Ok(())
