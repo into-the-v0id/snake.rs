@@ -1,5 +1,5 @@
 use crate::tile::Tile;
-use crate::config;
+use crate::{config, Drawable};
 use tetra::Context;
 use crate::color::Color;
 
@@ -29,16 +29,6 @@ impl Snake {
 			tail: Vec::new(),
 			direction: Direction::Up,
 		}
-	}
-
-	pub fn draw(&self, ctx: &mut Context) -> tetra::Result {
-		for tile in self.tail.iter() {
-			tile.draw(ctx)?;
-		}
-
-		self.head.draw(ctx)?;
-
-		Ok(())
 	}
 
 	pub fn move_forward(&mut self) -> tetra::Result {
@@ -96,5 +86,17 @@ impl Snake {
 		}
 
 		false
+	}
+}
+
+impl Drawable for Snake {
+	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
+		for tile in self.tail.iter_mut() {
+			tile.draw(ctx)?;
+		}
+
+		self.head.draw(ctx)?;
+
+		Ok(())
 	}
 }

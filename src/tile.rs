@@ -2,7 +2,7 @@ use tetra::math::Vec2;
 use tetra::graphics;
 use tetra::graphics::DrawParams;
 use tetra::Context;
-use crate::config;
+use crate::{config, Drawable};
 use crate::color::Color;
 
 #[derive(Clone)]
@@ -18,8 +18,10 @@ impl Tile {
 			color,
 		}
 	}
+}
 
-	pub fn draw(&self, ctx: &mut Context) -> tetra::Result {
+impl Drawable for Tile {
+	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
 		let rectangle = graphics::Texture::from_rgba(ctx, 1, 1, &[255, 255, 255, 255])?;
 
 		let space_size = config::TILE_SIZE as f32;

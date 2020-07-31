@@ -1,4 +1,4 @@
-use crate::config;
+use crate::{config, Drawable};
 use tetra::Context;
 use tetra::graphics;
 use tetra::graphics::text::Font;
@@ -28,29 +28,7 @@ impl Alert {
 		})
 	}
 
-	pub fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
-		self.draw_background(ctx)?;
-
-		if self.title_font.is_none() {
-			self.title_font = Some(self.font_builder.with_size(ctx, 56.0)?);
-		}
-		if let Some(title_font) = &self.title_font {
-			Alert::draw_text(ctx, &self.title, title_font.clone(), 100.0)?;
-		}
-
-		if let Some(description) = &self.description {
-			if self.description_font.is_none() {
-				self.description_font = Some(self.font_builder.with_size(ctx, 16.0)?);
-			}
-			if let Some(description_font) = &self.description_font {
-				Alert::draw_text(ctx, description, description_font.clone(), 165.0)?;
-			}
-		}
-
-		Ok(())
-	}
-
-	fn draw_background(&self, ctx: &mut Context) -> tetra::Result {
+	fn draw_background(ctx: &mut Context) -> tetra::Result {
 		let rectangle = graphics::Texture::from_rgba(ctx, 1, 1, &[255, 255, 255, 255])?;
 		graphics::draw(
 			ctx,
@@ -83,6 +61,30 @@ impl Alert {
 					y
 				))
 		);
+
+		Ok(())
+	}
+}
+
+impl Drawable for Alert {
+	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
+		Alert::draw_background(ctx)?;
+
+		if self.title_font.is_none() {
+			self.title_font = Some(self.font_builder.with_size(ctx, 56.0)?);
+		}
+		if let Some(title_font) = &self.title_font {
+			Alert::draw_text(ctx, &self.title, title_font.clone(), 100.0)?;
+		}
+
+		if let Some(description) = &self.description {
+			if self.description_font.is_none() {
+				self.description_font = Some(self.font_builder.with_size(ctx, 16.0)?);
+			}
+			if let Some(description_font) = &self.description_font {
+				Alert::draw_text(ctx, description, description_font.clone(), 165.0)?;
+			}
+		}
 
 		Ok(())
 	}

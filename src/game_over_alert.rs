@@ -2,6 +2,7 @@ use tetra::Context;
 use tetra::graphics;
 use tetra::graphics::text::Font;
 use crate::alert::Alert;
+use crate::Drawable;
 
 #[derive(Clone)]
 pub struct GameOverAlert {
@@ -28,8 +29,10 @@ impl GameOverAlert {
 			score_label_font: None,
 		})
 	}
+}
 
-	pub fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
+impl Drawable for GameOverAlert {
+	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
 		self.base_alert.draw(ctx)?;
 
 		if self.score_font.is_none() {

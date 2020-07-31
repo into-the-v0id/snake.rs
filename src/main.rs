@@ -10,17 +10,23 @@ use tetra::time::Timestep;
 use crate::snake::Direction;
 use crate::alert::Alert;
 use crate::game_over_alert::GameOverAlert;
+use crate::stateful_drawable::StatefulDrawable;
 
 mod config;
 mod color;
+mod stateful_drawable;
 mod background;
 mod snake;
 mod tile;
 mod alert;
 mod game_over_alert;
 
+pub trait Drawable {
+    fn draw(&mut self, ctx: &mut Context) -> tetra::Result;
+}
+
 #[derive(Eq, PartialEq, Copy, Clone)]
-enum ContextState {
+pub enum ContextState {
     Updated,
     Drawn,
 }
@@ -30,22 +36,11 @@ struct GameState {
     pub is_paused: bool,
     pub is_game_over: bool,
 
-    pub background: Background,
-    background_canvas: graphics::Canvas,
-    background_state: ContextState,
-
-    pub snake: Snake,
-    snake_canvas: graphics::Canvas,
-    snake_state: ContextState,
+    pub background_wrapper: StatefulDrawable<Background>,
+    pub snake_wrapper: StatefulDrawable<Snake>,
     snake_direction_queue: Option<Direction>,
-
-    pub pause_alert: Alert,
-    pause_alert_canvas: graphics::Canvas,
-    pause_alert_state: ContextState,
-
-    pub game_over_alert: GameOverAlert,
-    game_over_alert_canvas: graphics::Canvas,
-    game_over_alert_state: ContextState,
+    pub pause_alert_wrapper: StatefulDrawable<Alert>,
+    pub game_over_alert_wrapper: StatefulDrawable<GameOverAlert>,
 }
 
 impl GameState {
@@ -55,26 +50,31 @@ impl GameState {
             is_paused: false,
             is_game_over: false,
 
-            background: Background,
-            background_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
-            background_state: ContextState::Updated,
-
-            snake: Snake::new(),
-            snake_canvas: graphics::Canvas::new(ctx, PLAYGROUND_SIZE_X as i32, PLAYGROUND_SIZE_Y as i32)?,
-            snake_state: ContextState::Updated,
+            background_wrapper: StatefulDrawable::new(
+                Background,
+                graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+                None
+            ),
+            snake_wrapper: StatefulDrawable::new(
+                Snake::new(),
+                graphics::Canvas::new(ctx, PLAYGROUND_SIZE_X as i32, PLAYGROUND_SIZE_Y as i32)?,
+                Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
+            ),
             snake_direction_queue: None,
-
-            pause_alert: Alert::try_new("Paused", "Press 'ESC' to resume")?,
-            pause_alert_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
-            pause_alert_state: ContextState::Updated,
-
-            game_over_alert: GameOverAlert::try_new(
-                Alert::try_new("Game over", "Press 'R' to restart")?,
-                0,
-                "Score"
-            )?,
-            game_over_alert_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
-            game_over_alert_state: ContextState::Updated,
+            pause_alert_wrapper: StatefulDrawable::new(
+                Alert::try_new("Paused", "Press 'ESC' to resume")?,
+                graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+                None
+            ),
+            game_over_alert_wrapper: StatefulDrawable::new(
+                GameOverAlert::try_new(
+                    Alert::try_new("Game over", "Press 'R' to restart")?,
+                    0,
+                    "Score"
+                )?,
+                graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+                None
+            ),
         })
     }
 
@@ -98,11 +98,11 @@ impl GameState {
         self.is_paused = false;
         self.is_locked = false;
 
-        self.snake = Snake::new();
-        self.snake_state = ContextState::Updated;
+        self.snake_wrapper.inner = Snake::new();
+        self.snake_wrapper.state = ContextState::Updated;
 
-        self.game_over_alert.score = 0;
-        self.game_over_alert_state = ContextState::Updated;
+        self.game_over_alert_wrapper.inner.score = 0;
+        self.game_over_alert_wrapper.state = ContextState::Updated;
     }
 }
 
@@ -113,17 +113,17 @@ impl TetraState for GameState {
         }
 
         if let Some(direction) = self.snake_direction_queue {
-            self.snake.direction = direction;
+            self.snake_wrapper.inner.direction = direction;
             self.snake_direction_queue = None;
         }
 
-        let mut snake_clone = self.snake.clone();
+        let mut snake_clone = self.snake_wrapper.inner.clone();
         snake_clone.move_forward()?;
         if snake_clone.head_collides() {
             self.game_over();
         } else {
-            self.snake = snake_clone;
-            self.snake_state = ContextState::Updated;
+            self.snake_wrapper.inner = snake_clone;
+            self.snake_wrapper.state = ContextState::Updated;
         }
 
         Ok(())
@@ -132,53 +132,10 @@ impl TetraState for GameState {
     fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
         graphics::clear(ctx, Color::rgba(0, 0, 0, 1.0).into());
 
-        if self.background_state == ContextState::Updated {
-            graphics::set_canvas(ctx, &self.background_canvas);
-            graphics::clear(ctx, Color::transparent().into());
-            self.background.draw(ctx)?;
-            graphics::reset_canvas(ctx);
-
-            self.background_state = ContextState::Drawn;
-        }
-        graphics::draw(ctx, &self.background_canvas, Vec2::new(0.0, 0.0));
-
-        if self.snake_state == ContextState::Updated {
-            graphics::set_canvas(ctx, &self.snake_canvas);
-            graphics::clear(ctx, Color::transparent().into());
-            self.snake.draw(ctx)?;
-            graphics::reset_canvas(ctx);
-
-            self.snake_state = ContextState::Drawn;
-        }
-        graphics::draw(
-            ctx,
-            &self.snake_canvas,
-            Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
-        );
-
-        if self.is_game_over {
-            if self.game_over_alert_state == ContextState::Updated {
-                graphics::set_canvas(ctx, &self.game_over_alert_canvas);
-                graphics::clear(ctx, Color::transparent().into());
-                self.game_over_alert.draw(ctx)?;
-                graphics::reset_canvas(ctx);
-
-                self.game_over_alert_state = ContextState::Drawn;
-            }
-            graphics::draw(ctx, &self.game_over_alert_canvas, Vec2::new(0.0, 0.0));
-        }
-
-        if self.is_paused {
-            if self.pause_alert_state == ContextState::Updated {
-                graphics::set_canvas(ctx, &self.pause_alert_canvas);
-                graphics::clear(ctx, Color::transparent().into());
-                self.pause_alert.draw(ctx)?;
-                graphics::reset_canvas(ctx);
-
-                self.pause_alert_state = ContextState::Drawn;
-            }
-            graphics::draw(ctx, &self.pause_alert_canvas, Vec2::new(0.0, 0.0));
-        }
+        self.background_wrapper.draw(ctx)?;
+        self.snake_wrapper.draw(ctx)?;
+        if self.is_game_over { self.game_over_alert_wrapper.draw(ctx)?; }
+        if self.is_paused { self.pause_alert_wrapper.draw(ctx)?; }
 
         Ok(())
     }
@@ -188,16 +145,16 @@ impl TetraState for GameState {
             match event {
                 Event::KeyPressed { key } => {
                     match key {
-                        Key::W | Key::Up if self.snake.direction != Direction::Down => {
+                        Key::W | Key::Up if self.snake_wrapper.inner.direction != Direction::Down => {
                             self.snake_direction_queue = Some(Direction::Up);
                         }
-                        Key::S | Key::Down if self.snake.direction != Direction::Up => {
+                        Key::S | Key::Down if self.snake_wrapper.inner.direction != Direction::Up => {
                             self.snake_direction_queue = Some(Direction::Down);
                         }
-                        Key::A | Key::Left if self.snake.direction != Direction::Right => {
+                        Key::A | Key::Left if self.snake_wrapper.inner.direction != Direction::Right => {
                             self.snake_direction_queue = Some(Direction::Left);
                         }
-                        Key::D | Key::Right if self.snake.direction != Direction::Left => {
+                        Key::D | Key::Right if self.snake_wrapper.inner.direction != Direction::Left => {
                             self.snake_direction_queue = Some(Direction::Right);
                         }
                         Key::Escape | Key::P => { self.pause(); }
