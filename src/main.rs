@@ -9,6 +9,7 @@ use color::Color;
 use tetra::time::Timestep;
 use crate::snake::Direction;
 use crate::alert::Alert;
+use crate::game_over_alert::GameOverAlert;
 
 mod config;
 mod color;
@@ -16,6 +17,7 @@ mod background;
 mod snake;
 mod tile;
 mod alert;
+mod game_over_alert;
 
 #[derive(Eq, PartialEq, Copy, Clone)]
 enum ContextState {
@@ -41,7 +43,7 @@ struct GameState {
     pause_alert_canvas: graphics::Canvas,
     pause_alert_state: ContextState,
 
-    pub game_over_alert: Alert,
+    pub game_over_alert: GameOverAlert,
     game_over_alert_canvas: graphics::Canvas,
     game_over_alert_state: ContextState,
 }
@@ -66,7 +68,11 @@ impl GameState {
             pause_alert_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
             pause_alert_state: ContextState::Updated,
 
-            game_over_alert: Alert::try_new("Game over", "Press 'R' to restart")?,
+            game_over_alert: GameOverAlert::try_new(
+                Alert::try_new("Game over", "Press 'R' to restart")?,
+                0,
+                "Score"
+            )?,
             game_over_alert_canvas: graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
             game_over_alert_state: ContextState::Updated,
         })
@@ -94,6 +100,9 @@ impl GameState {
 
         self.snake = Snake::new();
         self.snake_state = ContextState::Updated;
+
+        self.game_over_alert.score = 0;
+        self.game_over_alert_state = ContextState::Updated;
     }
 }
 

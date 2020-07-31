@@ -8,8 +8,8 @@ use tetra::graphics::DrawParams;
 
 #[derive(Clone)]
 pub struct Alert {
-	pub title: &'static str,
-	pub description: Option<&'static str>,
+	pub title: String,
+	pub description: Option<String>,
 
 	font_builder: graphics::text::VectorFontBuilder,
 	title_font: Option<Font>,
@@ -17,10 +17,10 @@ pub struct Alert {
 }
 
 impl Alert {
-	pub fn try_new<T: Into<Option<&'static str>>>(title: &'static str, description: T) -> tetra::Result<Alert> {
+	pub fn try_new<S: Into<String>, O: Into<Option<S>>>(title: S, description: O) -> tetra::Result<Alert> {
 		Ok(Alert {
-			title,
-			description: description.into(),
+			title: title.into(),
+			description: description.into().and_then(|desc| Some(desc.into())),
 
 			font_builder: graphics::text::VectorFontBuilder::new("./assets/fonts/digitalt/digitalt.ttf")?,
 			title_font: None,
@@ -35,10 +35,10 @@ impl Alert {
 			self.title_font = Some(self.font_builder.with_size(ctx, 56.0)?);
 		}
 		if let Some(title_font) = &self.title_font {
-			Alert::draw_text(ctx, self.title, title_font.clone(), 100.0)?;
+			Alert::draw_text(ctx, &self.title, title_font.clone(), 100.0)?;
 		}
 
-		if let Some(description) = self.description {
+		if let Some(description) = &self.description {
 			if self.description_font.is_none() {
 				self.description_font = Some(self.font_builder.with_size(ctx, 16.0)?);
 			}
@@ -67,8 +67,8 @@ impl Alert {
 		Ok(())
 	}
 
-	fn draw_text(ctx: &mut Context, content: &'static str, font: Font, y: f32) -> tetra::Result {
-		let text = graphics::text::Text::new(content, font);
+	pub fn draw_text<T: Into<String>>(ctx: &mut Context, content: T, font: Font, y: f32) -> tetra::Result {
+		let text = graphics::text::Text::new(content.into(), font);
 
 		let bounds = text.get_bounds(ctx)
 			.expect("Unable to calculate bounds of text");
