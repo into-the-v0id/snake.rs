@@ -1,4 +1,5 @@
 use tetra::graphics;
+use tetra::input;
 use tetra::math::Vec2;
 use tetra::input::Key;
 use tetra::input::MouseButton;
@@ -107,7 +108,7 @@ impl GameState {
 }
 
 impl TetraState for GameState {
-    fn update(&mut self, _ctx: &mut Context) -> tetra::Result {
+    fn update(&mut self, ctx: &mut Context) -> tetra::Result {
         if self.is_locked {
             return Ok(());
         }
@@ -115,6 +116,24 @@ impl TetraState for GameState {
         if let Some(direction) = self.snake_direction_queue {
             self.snake_wrapper.inner.direction = direction;
             self.snake_direction_queue = None;
+        } else {
+            fn any_key_down(ctx: &Context, keys: Vec<Key>) -> bool {
+                keys.iter().any(|&key| input::is_key_down(ctx, key))
+            }
+
+            if any_key_down(ctx, vec![Key::Up, Key::W])
+                && self.snake_wrapper.inner.direction != Direction::Down {
+                self.snake_wrapper.inner.direction = Direction::Up;
+            } else if any_key_down(ctx, vec![Key::Down, Key::S])
+                && self.snake_wrapper.inner.direction != Direction::Up {
+                self.snake_wrapper.inner.direction = Direction::Down;
+            } else if any_key_down(ctx, vec![Key::Left, Key::A])
+                && self.snake_wrapper.inner.direction != Direction::Right {
+                self.snake_wrapper.inner.direction = Direction::Left;
+            } else if any_key_down(ctx, vec![Key::Right, Key::D])
+                && self.snake_wrapper.inner.direction != Direction::Left {
+                self.snake_wrapper.inner.direction = Direction::Right;
+            }
         }
 
         let mut snake_clone = self.snake_wrapper.inner.clone();
