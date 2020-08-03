@@ -1,15 +1,8 @@
 use crate::tile::Tile;
+use crate::direction::Direction;
 use crate::{config, Drawable};
 use tetra::Context;
 use crate::color::Color;
-
-#[derive(Eq, PartialEq, Copy, Clone)]
-pub enum Direction {
-	Up,
-	Down,
-	Left,
-	Right,
-}
 
 #[derive(Clone)]
 pub struct Snake {

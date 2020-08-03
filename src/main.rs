@@ -1,5 +1,4 @@
 use tetra::graphics;
-use tetra::input;
 use tetra::math::Vec2;
 use tetra::input::Key;
 use tetra::input::MouseButton;
@@ -8,13 +7,14 @@ use background::Background;
 use snake::Snake;
 use color::Color;
 use tetra::time::Timestep;
-use crate::snake::Direction;
+use crate::direction::Direction;
 use crate::alert::Alert;
 use crate::game_over_alert::GameOverAlert;
 use crate::stateful_drawable::StatefulDrawable;
 
 mod config;
 mod color;
+mod direction;
 mod stateful_drawable;
 mod background;
 mod snake;
@@ -39,7 +39,7 @@ struct GameState {
 
     pub background_wrapper: StatefulDrawable<Background>,
     pub snake_wrapper: StatefulDrawable<Snake>,
-    snake_direction_queue: Option<Direction>,
+    snake_direction_queue: Vec<Direction>,
     pub pause_alert_wrapper: StatefulDrawable<Alert>,
     pub game_over_alert_wrapper: StatefulDrawable<GameOverAlert>,
 }
@@ -61,7 +61,7 @@ impl GameState {
                 graphics::Canvas::new(ctx, PLAYGROUND_SIZE_X as i32, PLAYGROUND_SIZE_Y as i32)?,
                 Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
             ),
-            snake_direction_queue: None,
+            snake_direction_queue: Vec::new(),
             pause_alert_wrapper: StatefulDrawable::new(
                 Alert::try_new("Paused", "Press 'ESC' to resume")?,
                 graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
@@ -108,31 +108,22 @@ impl GameState {
 }
 
 impl TetraState for GameState {
-    fn update(&mut self, ctx: &mut Context) -> tetra::Result {
+    fn update(&mut self, _ctx: &mut Context) -> tetra::Result {
         if self.is_locked {
             return Ok(());
         }
 
-        if let Some(direction) = self.snake_direction_queue {
-            self.snake_wrapper.inner.direction = direction;
-            self.snake_direction_queue = None;
-        } else {
-            fn any_key_down(ctx: &Context, keys: Vec<Key>) -> bool {
-                keys.iter().any(|&key| input::is_key_down(ctx, key))
-            }
+        if self.snake_direction_queue.len() > 0 {
+            let dir_match = self.snake_direction_queue.iter().enumerate()
+                .rfind(|(_index, &dir)| {
+                    dir != Direction::opposite(&self.snake_wrapper.inner.direction)
+                });
 
-            if any_key_down(ctx, vec![Key::Up, Key::W])
-                && self.snake_wrapper.inner.direction != Direction::Down {
-                self.snake_wrapper.inner.direction = Direction::Up;
-            } else if any_key_down(ctx, vec![Key::Down, Key::S])
-                && self.snake_wrapper.inner.direction != Direction::Up {
-                self.snake_wrapper.inner.direction = Direction::Down;
-            } else if any_key_down(ctx, vec![Key::Left, Key::A])
-                && self.snake_wrapper.inner.direction != Direction::Right {
-                self.snake_wrapper.inner.direction = Direction::Left;
-            } else if any_key_down(ctx, vec![Key::Right, Key::D])
-                && self.snake_wrapper.inner.direction != Direction::Left {
-                self.snake_wrapper.inner.direction = Direction::Right;
+            if let Some((index, &dir)) = dir_match {
+                self.snake_wrapper.inner.direction = dir;
+                self.snake_direction_queue = Vec::from(&self.snake_direction_queue[(index + 1)..]);
+            } else {
+                self.snake_direction_queue.clear();
             }
         }
 
@@ -164,17 +155,17 @@ impl TetraState for GameState {
             match event {
                 Event::KeyPressed { key } => {
                     match key {
-                        Key::W | Key::Up if self.snake_wrapper.inner.direction != Direction::Down => {
-                            self.snake_direction_queue = Some(Direction::Up);
+                        Key::W | Key::Up => {
+                            self.snake_direction_queue.push(Direction::Up);
                         }
-                        Key::S | Key::Down if self.snake_wrapper.inner.direction != Direction::Up => {
-                            self.snake_direction_queue = Some(Direction::Down);
+                        Key::S | Key::Down => {
+                            self.snake_direction_queue.push(Direction::Down);
                         }
-                        Key::A | Key::Left if self.snake_wrapper.inner.direction != Direction::Right => {
-                            self.snake_direction_queue = Some(Direction::Left);
+                        Key::A | Key::Left => {
+                            self.snake_direction_queue.push(Direction::Left);
                         }
-                        Key::D | Key::Right if self.snake_wrapper.inner.direction != Direction::Left => {
-                            self.snake_direction_queue = Some(Direction::Right);
+                        Key::D | Key::Right => {
+                            self.snake_direction_queue.push(Direction::Right);
                         }
                         Key::Escape | Key::P => { self.pause(); }
                         _ => {}
