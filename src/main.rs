@@ -120,6 +120,7 @@ impl TetraState for GameState {
             let dir_match = self.snake_direction_queue.iter().enumerate()
                 .rfind(|(_index, &dir)| {
                     dir != Direction::opposite(&self.snake_wrapper.inner.direction)
+                        && dir != self.snake_wrapper.inner.direction
                 });
 
             if let Some((index, &dir)) = dir_match {
