@@ -92,6 +92,9 @@ impl GameState {
     pub fn game_over(&mut self) {
         self.is_game_over = true;
         self.is_locked = true;
+
+        self.game_over_alert_wrapper.inner.score = self.snake_wrapper.inner.tail.len() as u16;
+        self.game_over_alert_wrapper.state = ContextState::Updated;
     }
 
     pub fn restart(&mut self) {
