@@ -24,7 +24,7 @@ impl Snake {
 		}
 	}
 
-	pub fn move_forward(&mut self) -> tetra::Result {
+	pub fn move_forward(&mut self) {
 		let head = &mut self.head;
 		let mut tiles = self.tail.iter_mut().rev().peekable();
 		while let Some(mut tile) = tiles.next() {
@@ -38,8 +38,6 @@ impl Snake {
 			Direction::Left => self.head.position.x -= 1,
 			Direction::Right => self.head.position.x += 1,
 		}
-
-		Ok(())
 	}
 
 	pub fn grow_tail(&mut self) {

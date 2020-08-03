@@ -128,7 +128,7 @@ impl TetraState for GameState {
         }
 
         let mut snake_clone = self.snake_wrapper.inner.clone();
-        snake_clone.move_forward()?;
+        snake_clone.move_forward();
         if snake_clone.head_collides() {
             self.game_over();
         } else {
