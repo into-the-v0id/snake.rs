@@ -130,14 +130,16 @@ impl TetraState for GameState {
             }
         }
 
-        let mut snake_clone = self.snake_wrapper.inner.clone();
-        snake_clone.move_forward();
-        if snake_clone.head_collides() {
+        let mut moved_snake = self.snake_wrapper.inner.clone();
+        moved_snake.move_forward();
+
+        if moved_snake.head_collides() {
             self.game_over();
-        } else {
-            self.snake_wrapper.inner = snake_clone;
-            self.snake_wrapper.state = ContextState::Updated;
+            return Ok(());
         }
+
+        self.snake_wrapper.inner = moved_snake;
+        self.snake_wrapper.state = ContextState::Updated;
 
         Ok(())
     }
