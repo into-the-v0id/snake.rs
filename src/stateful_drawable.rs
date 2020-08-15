@@ -1,6 +1,12 @@
-use crate::{Drawable, ContextState, Color};
+use crate::{Drawable, Color};
 use tetra::{graphics, Context};
 use tetra::math::Vec2;
+
+#[derive(Eq, PartialEq, Copy, Clone)]
+pub enum ContextState {
+	Updated,
+	Drawn,
+}
 
 #[derive(Clone)]
 pub struct StatefulDrawable<T>

@@ -1,5 +1,4 @@
-use tetra::Context;
-use tetra::graphics;
+use tetra::{graphics, Context};
 use tetra::graphics::text::Font;
 use crate::{Drawable, Alert};
 

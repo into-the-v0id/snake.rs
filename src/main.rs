@@ -1,11 +1,18 @@
 use tetra::{graphics, Context, ContextBuilder, State as TetraState, Event};
-use color::Color;
 use tetra::time::Timestep;
-use crate::screen::Screen;
+use crate::screen::*;
+use crate::color::*;
+use crate::alert::*;
+use crate::stateful_drawable::*;
+use crate::drawable_group::*;
 
 mod config;
-mod color;
 mod screen;
+mod color;
+
+mod alert;
+mod stateful_drawable;
+mod drawable_group;
 
 pub enum ScreenRefMut<'a> {
     Start(&'a mut screen::StartScreen),
@@ -60,7 +67,7 @@ impl State {
             },
             screens: Screens {
                 start: screen::StartScreen::new(ctx),
-                game: screen::GameScreen::new(ctx),
+                game: screen::GameScreen::try_new(ctx)?,
             }
         })
     }
