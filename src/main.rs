@@ -11,6 +11,10 @@ use crate::direction::Direction;
 use crate::alert::Alert;
 use crate::game_over_alert::GameOverAlert;
 use crate::stateful_drawable::StatefulDrawable;
+use crate::tile::Tile;
+use crate::drawable_group::DrawableGroup;
+use rand;
+use rand::Rng;
 
 mod config;
 mod color;
@@ -19,6 +23,7 @@ mod stateful_drawable;
 mod background;
 mod snake;
 mod tile;
+mod drawable_group;
 mod alert;
 mod game_over_alert;
 
@@ -40,13 +45,14 @@ struct GameState {
     pub background_wrapper: StatefulDrawable<Background>,
     pub snake_wrapper: StatefulDrawable<Snake>,
     snake_direction_queue: Vec<Direction>,
+    pub apples_wrapper: StatefulDrawable<DrawableGroup<Tile>>,
     pub pause_alert_wrapper: StatefulDrawable<Alert>,
     pub game_over_alert_wrapper: StatefulDrawable<GameOverAlert>,
 }
 
 impl GameState {
     pub fn factory(ctx: &mut Context) -> tetra::Result<GameState> {
-        tetra::Result::Ok(GameState {
+        let mut state = GameState {
             is_locked: false,
             is_paused: false,
             is_game_over: false,
@@ -62,6 +68,11 @@ impl GameState {
                 Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
             ),
             snake_direction_queue: Vec::new(),
+            apples_wrapper: StatefulDrawable::new(
+                DrawableGroup::new(),
+                graphics::Canvas::new(ctx, PLAYGROUND_SIZE_X as i32, PLAYGROUND_SIZE_Y as i32)?,
+                Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
+            ),
             pause_alert_wrapper: StatefulDrawable::new(
                 Alert::try_new("Paused", "Press 'ESC' to resume")?,
                 graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
@@ -76,7 +87,44 @@ impl GameState {
                 graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
                 None
             ),
-        })
+        };
+
+        state.spawn_apple();
+
+        Ok(state)
+    }
+
+    pub fn spawn_apple(&mut self) -> &Tile {
+        let apple = Tile {
+            position: self.choose_apple_position(),
+            color: Color::from(config::APPLE_COLOR),
+        };
+
+        self.apples_wrapper.inner.items.push(apple);
+
+        self.apples_wrapper.inner.items.last()
+            .expect("Cannot get last apple")
+    }
+
+    pub fn choose_apple_position(&self) -> Vec2<i32> {
+        let mut rand_range = rand::thread_rng();
+        let pos = Vec2::new(
+            rand_range.gen_range(0, config::TILE_COUNT_X) as i32,
+            rand_range.gen_range(0, config::TILE_COUNT_Y) as i32
+        );
+
+        let next_head_pos = self.snake_wrapper.inner.get_next_head_position();
+
+        let is_blacklisted = self.snake_wrapper.inner.head.position == pos
+            || next_head_pos == pos
+            || self.snake_wrapper.inner.tail.iter().any(|tile| tile.position == pos)
+            || self.apples_wrapper.inner.items.iter().any(|apple| apple.position == pos);
+
+        if is_blacklisted {
+            return self.choose_apple_position();
+        }
+
+        pos
     }
 
     pub fn pause(&mut self) {
@@ -105,6 +153,10 @@ impl GameState {
         self.snake_wrapper.inner = Snake::new();
         self.snake_wrapper.state = ContextState::Updated;
 
+        self.apples_wrapper.inner.items.clear();
+        self.spawn_apple();
+        self.apples_wrapper.state = ContextState::Updated;
+
         self.game_over_alert_wrapper.inner.score = 0;
         self.game_over_alert_wrapper.state = ContextState::Updated;
     }
@@ -131,6 +183,25 @@ impl TetraState for GameState {
             }
         }
 
+        let next_head_pos = self.snake_wrapper.inner.get_next_head_position();
+
+        let collided_apple_index = self.apples_wrapper.inner.items.iter()
+            .enumerate()
+            .find(|(_index, apple)| apple.position == next_head_pos)
+            .and_then(|(index, _apple)| Some(index));
+
+        if let Some(index) = collided_apple_index {
+            let new_position = self.choose_apple_position();
+
+            let apple = self.apples_wrapper.inner.items.get_mut(index)
+                .expect("Could not find apple");
+            apple.position = new_position;
+            self.apples_wrapper.state = ContextState::Updated;
+
+            self.snake_wrapper.inner.grow_tail();
+            self.snake_wrapper.state = ContextState::Updated;
+        }
+
         let mut moved_snake = self.snake_wrapper.inner.clone();
         moved_snake.move_forward();
 
@@ -149,6 +220,7 @@ impl TetraState for GameState {
         graphics::clear(ctx, Color::rgba(0, 0, 0, 1.0).into());
 
         self.background_wrapper.draw(ctx)?;
+        self.apples_wrapper.draw(ctx)?;
         self.snake_wrapper.draw(ctx)?;
         if self.is_game_over { self.game_over_alert_wrapper.draw(ctx)?; }
         if self.is_paused { self.pause_alert_wrapper.draw(ctx)?; }

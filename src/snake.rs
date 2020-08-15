@@ -3,6 +3,7 @@ use crate::direction::Direction;
 use crate::{config, Drawable};
 use tetra::Context;
 use crate::color::Color;
+use tetra::math::Vec2;
 
 #[derive(Clone)]
 pub struct Snake {
@@ -32,12 +33,20 @@ impl Snake {
 			tile.position = prev_tile.position;
 		}
 
+		self.head.position = self.get_next_head_position();
+	}
+
+	pub fn get_next_head_position(&self) -> Vec2<i32> {
+		let mut head_pos = self.head.position.clone();
+
 		match self.direction {
-			Direction::Up => self.head.position.y -= 1,
-			Direction::Down => self.head.position.y += 1,
-			Direction::Left => self.head.position.x -= 1,
-			Direction::Right => self.head.position.x += 1,
+			Direction::Up => head_pos.y -= 1,
+			Direction::Down => head_pos.y += 1,
+			Direction::Left => head_pos.x -= 1,
+			Direction::Right => head_pos.x += 1,
 		}
+
+		head_pos
 	}
 
 	pub fn grow_tail(&mut self) {
