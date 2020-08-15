@@ -1,19 +1,29 @@
-use tetra::{Context, Event};
+use tetra::{graphics, Context, Event};
 use super::{Screen, Drawable, Updatable, EventHandler};
-use crate::{CurrentScreen, ScreenName};
+use crate::{CurrentScreen, ScreenName, Alert, StatefulDrawable, WINDOW_SIZE_X, WINDOW_SIZE_Y, Color};
 use tetra::input::{Key, MouseButton};
 
-pub struct StartScreen {}
+pub struct StartScreen {
+	pub intro_alert_wrapper: StatefulDrawable<Alert>,
+}
 
 impl StartScreen {
-	pub fn new(_ctx: &mut Context) -> StartScreen {
-		StartScreen {}
+	pub fn try_new(ctx: &mut Context) -> tetra::Result<StartScreen> {
+		Ok(StartScreen {
+			intro_alert_wrapper: StatefulDrawable::new(
+				Alert::try_new("Snake", "Press 'Space' to start")?,
+				graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+				None
+			),
+		})
 	}
 }
 
 impl Drawable for StartScreen {
-	fn draw(&mut self, _ctx: &mut Context) -> tetra::Result {
-		//
+	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
+		graphics::clear(ctx, Color::rgba(0, 0, 0, 1.0).into());
+
+		self.intro_alert_wrapper.draw(ctx)?;
 
 		Ok(())
 	}

@@ -66,7 +66,7 @@ impl State {
                 name: ScreenName::Start,
             },
             screens: Screens {
-                start: screen::StartScreen::new(ctx),
+                start: screen::StartScreen::try_new(ctx)?,
                 game: screen::GameScreen::try_new(ctx)?,
             }
         })
