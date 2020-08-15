@@ -7,20 +7,6 @@ mod config;
 mod color;
 mod screen;
 
-pub enum ScreenRef<'a> {
-    Start(&'a screen::StartScreen),
-    Game(&'a screen::GameScreen),
-}
-
-impl ScreenRef<'_> {
-    pub fn name(&self) -> ScreenName {
-        match self {
-            ScreenRef::Start(_) => ScreenName::Start,
-            ScreenRef::Game(_) => ScreenName::Game,
-        }
-    }
-}
-
 pub enum ScreenRefMut<'a> {
     Start(&'a mut screen::StartScreen),
     Game(&'a mut screen::GameScreen),
@@ -77,13 +63,6 @@ impl State {
                 game: screen::GameScreen::new(ctx),
             }
         })
-    }
-
-    pub fn current_screen(&self) -> &dyn Screen {
-        match self.current_screen.name {
-            ScreenName::Start => (&self.screens.start) as &dyn Screen,
-            ScreenName::Game => (&self.screens.game) as &dyn Screen,
-        }
     }
 
     pub fn current_screen_mut(&mut self) -> &mut dyn Screen {
