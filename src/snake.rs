@@ -1,8 +1,5 @@
-use crate::tile::Tile;
-use crate::direction::Direction;
-use crate::{config, Drawable};
+use crate::{config, Drawable, Tile, Direction, Color};
 use tetra::Context;
-use crate::color::Color;
 use tetra::math::Vec2;
 
 #[derive(Clone)]

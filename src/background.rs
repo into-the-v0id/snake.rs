@@ -1,8 +1,7 @@
-use crate::{config, Drawable};
+use crate::{config, Drawable, Color};
 use tetra::Context;
 use tetra::graphics;
 use tetra::math::Vec2;
-use crate::color::Color;
 use tetra::graphics::DrawParams;
 
 #[derive(Clone)]

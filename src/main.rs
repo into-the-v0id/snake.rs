@@ -1,18 +1,16 @@
-use tetra::graphics;
 use tetra::math::Vec2;
-use tetra::input::Key;
-use tetra::input::MouseButton;
-use tetra::{Context, ContextBuilder, State as TetraState, Event};
+use tetra::input::{Key, MouseButton};
+use tetra::{graphics, Context, ContextBuilder, State as TetraState, Event};
 use background::Background;
 use snake::Snake;
 use color::Color;
 use tetra::time::Timestep;
-use crate::direction::Direction;
-use crate::alert::Alert;
-use crate::game_over_alert::GameOverAlert;
-use crate::stateful_drawable::StatefulDrawable;
-use crate::tile::Tile;
-use crate::drawable_group::DrawableGroup;
+use direction::Direction;
+use alert::Alert;
+use game_over_alert::GameOverAlert;
+use stateful_drawable::StatefulDrawable;
+use tile::Tile;
+use drawable_group::DrawableGroup;
 use rand;
 use rand::Rng;
 

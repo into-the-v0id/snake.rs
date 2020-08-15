@@ -1,8 +1,7 @@
 use tetra::Context;
 use tetra::graphics;
 use tetra::graphics::text::Font;
-use crate::alert::Alert;
-use crate::Drawable;
+use crate::{Drawable, Alert};
 
 #[derive(Clone)]
 pub struct GameOverAlert {

@@ -1,9 +1,6 @@
 use tetra::math::Vec2;
-use tetra::graphics;
-use tetra::graphics::DrawParams;
-use tetra::Context;
-use crate::{config, Drawable};
-use crate::color::Color;
+use tetra::{graphics, Context};
+use crate::{config, Drawable, Color};
 
 #[derive(Clone)]
 pub struct Tile {
@@ -31,7 +28,7 @@ impl Drawable for Tile {
 		graphics::draw(
 			ctx,
 			&rectangle,
-			DrawParams::new()
+			graphics::DrawParams::new()
 				.scale(Vec2::new(tile_size, tile_size))
 				.position(Vec2::new(
 					(self.position.x * config::TILE_SIZE as i32) as f32 + margin_size,
