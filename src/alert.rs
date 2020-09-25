@@ -34,8 +34,8 @@ impl Alert {
 			&rectangle,
 			DrawParams::new()
 				.scale(Vec2::new(
-					crate::WINDOW_SIZE_X as f32,
-					crate::WINDOW_SIZE_Y as f32
+					crate::WINDOW_WIDTH as f32,
+					crate::WINDOW_HEIGHT as f32
 				))
 				.position(Vec2::new(0.0, 0.0))
 				.color(Color::from(config::ALERT_BACKGROUND_COLOR).into())
@@ -56,7 +56,7 @@ impl Alert {
 			DrawParams::new()
 				.color(Color::from(config::ALERT_FONT_COLOR).into())
 				.position(Vec2::new(
-					(crate::WINDOW_SIZE_X / 2) as f32 - bounds.width / 2.0,
+					(crate::WINDOW_WIDTH / 2) as f32 - bounds.width / 2.0,
 					y
 				))
 		);

@@ -39,23 +39,23 @@ impl GameScreen {
 
 			background_wrapper: StatefulDrawable::new(
 				Background,
-				graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
 			snake_wrapper: StatefulDrawable::new(
 				Snake::new(),
-				graphics::Canvas::new(ctx, PLAYGROUND_SIZE_X as i32, PLAYGROUND_SIZE_Y as i32)?,
+				graphics::Canvas::new(ctx, PLAYGROUND_WIDTH as i32, PLAYGROUND_HEIGHT as i32)?,
 				Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
 			),
 			snake_direction_queue: Vec::new(),
 			apples_wrapper: StatefulDrawable::new(
 				DrawableGroup::new(),
-				graphics::Canvas::new(ctx, PLAYGROUND_SIZE_X as i32, PLAYGROUND_SIZE_Y as i32)?,
+				graphics::Canvas::new(ctx, PLAYGROUND_WIDTH as i32, PLAYGROUND_HEIGHT as i32)?,
 				Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
 			),
 			pause_alert_wrapper: StatefulDrawable::new(
 				Alert::try_new("Paused", "Press 'ESC' to resume")?,
-				graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
 			game_over_alert_wrapper: StatefulDrawable::new(
@@ -64,7 +64,7 @@ impl GameScreen {
 					0,
 					"Score"
 				)?,
-				graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
 		};

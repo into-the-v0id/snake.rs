@@ -1,6 +1,6 @@
 use tetra::{graphics, Context, Event};
 use super::{Screen, Drawable, Updatable, EventHandler};
-use crate::{CurrentScreen, ScreenName, Alert, StatefulDrawable, WINDOW_SIZE_X, WINDOW_SIZE_Y, Color};
+use crate::{CurrentScreen, ScreenName, Alert, StatefulDrawable, WINDOW_WIDTH, WINDOW_HEIGHT, Color};
 use tetra::input::{Key, MouseButton};
 
 pub struct StartScreen {
@@ -12,7 +12,7 @@ impl StartScreen {
 		Ok(StartScreen {
 			intro_alert_wrapper: StatefulDrawable::new(
 				Alert::try_new("Snake", "Press 'Space' to start")?,
-				graphics::Canvas::new(ctx, WINDOW_SIZE_X as i32, WINDOW_SIZE_Y as i32)?,
+				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
 		})

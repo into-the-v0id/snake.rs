@@ -109,16 +109,16 @@ impl TetraState for State {
     }
 }
 
-const PLAYGROUND_SIZE_X: u16 = config::TILE_SIZE * config::TILE_COUNT_X;
-const PLAYGROUND_SIZE_Y: u16 = config::TILE_SIZE * config::TILE_COUNT_Y;
-const WINDOW_SIZE_X: u16 = PLAYGROUND_SIZE_X + config::PLAYGROUND_WALL_WIDTH * 2;
-const WINDOW_SIZE_Y: u16 = PLAYGROUND_SIZE_Y + config::PLAYGROUND_WALL_WIDTH * 2;
+const PLAYGROUND_WIDTH: u16 = config::TILE_SIZE * config::TILE_COUNT_X;
+const PLAYGROUND_HEIGHT: u16 = config::TILE_SIZE * config::TILE_COUNT_Y;
+const WINDOW_WIDTH: u16 = PLAYGROUND_WIDTH + config::PLAYGROUND_WALL_WIDTH * 2;
+const WINDOW_HEIGHT: u16 = PLAYGROUND_HEIGHT + config::PLAYGROUND_WALL_WIDTH * 2;
 
 fn main() -> tetra::Result {
     ContextBuilder::new(
         "Snake",
-        WINDOW_SIZE_X as i32,
-        WINDOW_SIZE_Y as i32
+        WINDOW_WIDTH as i32,
+        WINDOW_HEIGHT as i32
     )
         .timestep(Timestep::Fixed(3.0))
         .show_mouse(true)

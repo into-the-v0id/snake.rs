@@ -17,8 +17,8 @@ impl Drawable for Background {
 			&rectangle,
 			DrawParams::new()
 				.scale(Vec2::new(
-					crate::PLAYGROUND_SIZE_X as f32,
-					crate::PLAYGROUND_SIZE_Y as f32
+					crate::PLAYGROUND_WIDTH as f32,
+					crate::PLAYGROUND_HEIGHT as f32
 				))
 				.position(Vec2::new(
 					config::PLAYGROUND_WALL_WIDTH as f32,
