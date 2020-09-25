@@ -30,7 +30,7 @@ impl<T> StatefulDrawable<T>
 			inner: obj,
 			state: ContextState::Updated,
 			canvas,
-			canvas_pos: canvas_pos.into().unwrap_or(Vec2::new(0.0, 0.0))
+			canvas_pos: canvas_pos.into().unwrap_or_else(|| Vec2::new(0.0, 0.0))
 		}
 	}
 }

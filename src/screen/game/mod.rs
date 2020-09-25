@@ -7,7 +7,6 @@ use self::snake::*;
 use self::direction::*;
 use self::game_over_alert::*;
 use tetra::math::Vec2;
-use rand;
 use rand::Rng;
 use tetra::input::{MouseButton, Key};
 
@@ -87,7 +86,7 @@ impl GameScreen {
 
 	pub fn choose_apple_position(&self) -> Option<Vec2<i32>> {
 		let possible_positions = self.all_possible_apple_positions();
-		if possible_positions.len() == 0 {
+		if possible_positions.is_empty() {
 			return None;
 		}
 
@@ -170,7 +169,7 @@ impl Updatable for GameScreen {
 			return;
 		}
 
-		if self.snake_direction_queue.len() > 0 {
+		if ! self.snake_direction_queue.is_empty() {
 			let dir_match = self.snake_direction_queue.iter().enumerate()
 				.rfind(|(_index, &dir)| {
 					dir != Direction::opposite(&self.snake_wrapper.inner.direction)
@@ -190,7 +189,7 @@ impl Updatable for GameScreen {
 		let collided_apple_index = self.apples_wrapper.inner.items.iter()
 			.enumerate()
 			.find(|(_index, apple)| apple.position == next_head_pos)
-			.and_then(|(index, _apple)| Some(index));
+			.map(|(index, _apple)| index);
 
 		if let Some(index) = collided_apple_index {
 			let new_position = self.choose_apple_position();

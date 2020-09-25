@@ -17,17 +17,6 @@ impl Direction {
 			Direction::Right => Direction::Left,
 		}
 	}
-
-	pub fn to_string(&self) -> String {
-		let str = match self {
-			Direction::Up => "Up",
-			Direction::Down => "Down",
-			Direction::Left => "Left",
-			Direction::Right => "Right",
-		};
-
-		str.to_string()
-	}
 }
 
 impl fmt::Display for Direction {
@@ -38,6 +27,13 @@ impl fmt::Display for Direction {
 
 impl fmt::Debug for Direction {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		write!(f, "Direction::{}", self.to_string())
+		let str = match self {
+			Direction::Up => "Up",
+			Direction::Down => "Down",
+			Direction::Left => "Left",
+			Direction::Right => "Right",
+		};
+
+		write!(f, "Direction::{}", str)
 	}
 }

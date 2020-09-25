@@ -1,6 +1,5 @@
 use crate::Drawable;
 use tetra::Context;
-use tetra;
 
 pub struct DrawableGroup<I>
 	where I: Drawable
@@ -15,6 +14,14 @@ impl<I> DrawableGroup<I>
 		DrawableGroup {
 			items: Vec::new()
 		}
+	}
+}
+
+impl<I> Default for DrawableGroup<I>
+	where I: Drawable
+{
+	fn default() -> Self {
+		Self::new()
 	}
 }
 

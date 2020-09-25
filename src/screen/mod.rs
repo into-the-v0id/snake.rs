@@ -1,5 +1,4 @@
 use tetra::{Context, Event};
-use tetra;
 
 mod start;
 mod game;

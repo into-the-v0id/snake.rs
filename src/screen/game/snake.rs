@@ -35,7 +35,7 @@ impl Snake {
 	}
 
 	pub fn get_next_head_position(&self) -> Vec2<i32> {
-		let mut head_pos = self.head.position.clone();
+		let mut head_pos = self.head.position;
 
 		match self.direction {
 			Direction::Up => head_pos.y -= 1,
@@ -86,6 +86,13 @@ impl Snake {
 		false
 	}
 }
+
+impl Default for Snake {
+	fn default() -> Self {
+		Self::new()
+	}
+}
+
 
 impl Drawable for Snake {
 	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {

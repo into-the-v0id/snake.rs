@@ -19,7 +19,7 @@ impl Alert {
 	pub fn try_new<S: Into<String>, O: Into<Option<S>>>(title: S, description: O) -> tetra::Result<Alert> {
 		Ok(Alert {
 			title: title.into(),
-			description: description.into().and_then(|desc| Some(desc.into())),
+			description: description.into().map(|desc| desc.into()),
 
 			font_builder: graphics::text::VectorFontBuilder::new("./assets/fonts/digitalt/digitalt.ttf")?,
 			title_font: None,

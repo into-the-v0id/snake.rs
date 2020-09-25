@@ -82,7 +82,7 @@ impl State {
 
 impl TetraState for State {
     fn update(&mut self, _ctx: &mut Context) -> tetra::Result {
-        let mut current_screen = self.current_screen.clone();
+        let mut current_screen = self.current_screen;
         self.current_screen_mut()
             .update(&mut current_screen);
         self.current_screen = current_screen;
@@ -100,7 +100,7 @@ impl TetraState for State {
     }
 
     fn event(&mut self, _ctx: &mut Context, event: Event) -> tetra::Result {
-        let mut current_screen = self.current_screen.clone();
+        let mut current_screen = self.current_screen;
         self.current_screen_mut()
             .event(&mut current_screen, event);
         self.current_screen = current_screen;
