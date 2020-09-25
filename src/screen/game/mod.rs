@@ -74,37 +74,59 @@ impl GameScreen {
 		Ok(state)
 	}
 
-	pub fn spawn_apple(&mut self) -> &Tile {
+	pub fn spawn_apple(&mut self) -> Option<&Tile> {
 		let apple = Tile {
-			position: self.choose_apple_position(),
+			position: self.choose_apple_position()?,
 			color: Color::from(config::APPLE_COLOR),
 		};
 
 		self.apples_wrapper.inner.items.push(apple);
 
 		self.apples_wrapper.inner.items.last()
-			.expect("Cannot get last apple")
 	}
 
-	pub fn choose_apple_position(&self) -> Vec2<i32> {
-		let mut rand_range = rand::thread_rng();
-		let pos = Vec2::new(
-			rand_range.gen_range(0, config::TILE_COUNT_X) as i32,
-			rand_range.gen_range(0, config::TILE_COUNT_Y) as i32
-		);
-
-		let next_head_pos = self.snake_wrapper.inner.get_next_head_position();
-
-		let is_blacklisted = self.snake_wrapper.inner.head.position == pos
-			|| next_head_pos == pos
-			|| self.snake_wrapper.inner.tail.iter().any(|tile| tile.position == pos)
-			|| self.apples_wrapper.inner.items.iter().any(|apple| apple.position == pos);
-
-		if is_blacklisted {
-			return self.choose_apple_position();
+	pub fn choose_apple_position(&self) -> Option<Vec2<i32>> {
+		let possible_positions = self.all_possible_apple_positions();
+		if possible_positions.len() == 0 {
+			return None;
 		}
 
-		pos
+		let index = rand::thread_rng()
+			.gen_range(0, possible_positions.len());
+
+		possible_positions.get(index).cloned()
+	}
+
+	pub fn all_possible_apple_positions(&self) -> Vec<Vec2<i32>> {
+		let mut tail_positions: Vec<Vec2<i32>> = self.snake_wrapper.inner.tail.iter()
+			.map(|tile| tile.position)
+			.collect();
+
+		let mut apple_positions: Vec<Vec2<i32>> = self.apples_wrapper.inner.items.iter()
+			.map(|tile| tile.position)
+			.collect();
+
+		let mut blacklist = vec![
+			self.snake_wrapper.inner.head.position,
+			self.snake_wrapper.inner.get_next_head_position()
+		];
+		blacklist.append(&mut tail_positions);
+		blacklist.append(&mut apple_positions);
+
+		let mut possible_positions: Vec<Vec2<i32>> = Vec::new();
+		for x in 0..config::TILE_COUNT_X {
+			for y in 0..config::TILE_COUNT_Y {
+				let pos = Vec2::new(x as i32, y as i32);
+
+				if blacklist.contains(&pos) {
+					continue;
+				}
+
+				possible_positions.push(pos);
+			}
+		}
+
+		possible_positions
 	}
 
 	pub fn pause(&mut self) {
@@ -173,9 +195,13 @@ impl Updatable for GameScreen {
 		if let Some(index) = collided_apple_index {
 			let new_position = self.choose_apple_position();
 
-			let apple = self.apples_wrapper.inner.items.get_mut(index)
-				.expect("Could not find apple");
-			apple.position = new_position;
+			if let Some(new_position) = new_position {
+				let apple = self.apples_wrapper.inner.items.get_mut(index)
+					.expect("Could not find apple");
+				apple.position = new_position;
+			} else {
+				self.apples_wrapper.inner.items.remove(index);
+			}
 			self.apples_wrapper.state = ContextState::Updated;
 
 			self.snake_wrapper.inner.grow_tail();
