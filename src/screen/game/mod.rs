@@ -143,7 +143,7 @@ impl GameScreen {
 		self.is_locked = true;
 
 		self.game_over_alert_wrapper.inner.score = self.snake_wrapper.inner.tail.len() as u16;
-		self.game_over_alert_wrapper.state = ContextState::Updated;
+		self.game_over_alert_wrapper.updated = true;
 	}
 
 	pub fn restart(&mut self) {
@@ -152,14 +152,14 @@ impl GameScreen {
 		self.is_locked = false;
 
 		self.snake_wrapper.inner = Snake::new();
-		self.snake_wrapper.state = ContextState::Updated;
+		self.snake_wrapper.updated = true;
 
 		self.apples_wrapper.inner.items.clear();
 		self.spawn_apple();
-		self.apples_wrapper.state = ContextState::Updated;
+		self.apples_wrapper.updated = true;
 
 		self.game_over_alert_wrapper.inner.score = 0;
-		self.game_over_alert_wrapper.state = ContextState::Updated;
+		self.game_over_alert_wrapper.updated = true;
 	}
 }
 
@@ -201,10 +201,10 @@ impl Updatable for GameScreen {
 			} else {
 				self.apples_wrapper.inner.items.remove(index);
 			}
-			self.apples_wrapper.state = ContextState::Updated;
+			self.apples_wrapper.updated = true;
 
 			self.snake_wrapper.inner.grow_tail();
-			self.snake_wrapper.state = ContextState::Updated;
+			self.snake_wrapper.updated = true;
 		}
 
 		let mut moved_snake = self.snake_wrapper.inner.clone();
@@ -216,7 +216,7 @@ impl Updatable for GameScreen {
 		}
 
 		self.snake_wrapper.inner = moved_snake;
-		self.snake_wrapper.state = ContextState::Updated;
+		self.snake_wrapper.updated = true;
 	}
 }
 
