@@ -34,7 +34,7 @@ impl Drawable for Tile {
 					(self.position.x * config::TILE_SIZE as i32) as f32 + margin_size,
 					(self.position.y * config::TILE_SIZE as i32) as f32 + margin_size
 				))
-				.color((&self.color).into())
+				.color(self.color.as_tetra())
 		);
 
 		Ok(())

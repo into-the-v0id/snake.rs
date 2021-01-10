@@ -1,25 +1,37 @@
 use tetra::graphics::Color as TetraColor;
 use crate::config;
 
-#[derive(Clone)]
-pub struct Color(TetraColor);
+#[derive(Clone, Default)]
+pub struct Color {
+	pub r: u8,
+	pub g: u8,
+	pub b: u8,
+	pub a: f32
+}
 
 impl Color {
-	#[allow(dead_code)]
-	pub fn new(color: TetraColor) -> Color {
-		Color(color)
-	}
-
 	pub fn rgb(r: u8, g: u8, b: u8) -> Color {
-		Color(TetraColor::rgb8(r, g, b))
+		Color {
+			r, g, b,
+			a: 1.0
+		}
 	}
 
 	pub fn rgba(r: u8, g: u8, b: u8, a: f32) -> Color {
-		Color(TetraColor::rgba8(r, g, b, (a * 255.0).round() as u8))
+		Color {
+			r, g, b, a
+		}
 	}
 
 	pub fn transparent() -> Color {
 		Color::rgba(0, 0, 0, 0.0)
+	}
+
+	pub fn as_tetra(&self) -> TetraColor {
+		let mut tetra_color = TetraColor::rgb8(self.r, self.g, self.b);
+		tetra_color.a = self.a;
+
+		tetra_color
 	}
 }
 
@@ -30,19 +42,21 @@ impl From<config::Color> for Color {
 }
 
 impl From<TetraColor> for Color {
-	fn from(color: TetraColor) -> Self {
-		Color(color)
+	fn from(tetra_color: TetraColor) -> Self {
+		Color::rgba(
+			(tetra_color.r * 255.0).round() as u8,
+			(tetra_color.g * 255.0).round() as u8,
+			(tetra_color.b * 255.0).round() as u8,
+			tetra_color.a
+		)
 	}
 }
 
 impl Into<TetraColor> for Color {
 	fn into(self) -> TetraColor {
-		self.0
-	}
-}
+		let mut tetra_color = TetraColor::rgb8(self.r, self.g, self.b);
+		tetra_color.a = self.a;
 
-impl Into<TetraColor> for &Color {
-	fn into(self) -> TetraColor {
-		self.0
+		tetra_color
 	}
 }
