@@ -9,7 +9,6 @@ use crate::drawable_collection::*;
 mod config;
 mod screen;
 mod color;
-
 mod alert;
 mod lazy_drawable;
 mod drawable_collection;

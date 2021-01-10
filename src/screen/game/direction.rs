@@ -1,6 +1,4 @@
-use std::fmt;
-
-#[derive(Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Direction {
 	Up,
 	Down,
@@ -16,24 +14,5 @@ impl Direction {
 			Direction::Left => Direction::Right,
 			Direction::Right => Direction::Left,
 		}
-	}
-}
-
-impl fmt::Display for Direction {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		write!(f, "{}", self.to_string())
-	}
-}
-
-impl fmt::Debug for Direction {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		let str = match self {
-			Direction::Up => "Up",
-			Direction::Down => "Down",
-			Direction::Left => "Left",
-			Direction::Right => "Right",
-		};
-
-		write!(f, "Direction::{}", str)
 	}
 }
