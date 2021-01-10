@@ -53,3 +53,81 @@ impl Into<TetraColor> for Color {
 		tetra_color
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn test_create_rgb() {
+		let color = Color::rgb(1, 2, 3);
+
+		assert_eq!(color.r, 1);
+		assert_eq!(color.g, 2);
+		assert_eq!(color.b, 3);
+		assert_eq!(color.a, 1.0);
+	}
+
+	#[test]
+	fn test_create_rgba() {
+		let color = Color::rgba(255, 254, 253, 0.45);
+
+		assert_eq!(color.r, 255);
+		assert_eq!(color.g, 254);
+		assert_eq!(color.b, 253);
+		assert_eq!(color.a, 0.45);
+	}
+
+	#[test]
+	fn test_create_transparent() {
+		let color = Color::transparent();
+
+		assert_eq!(color.a, 0.0);
+	}
+
+	#[test]
+	fn test_create_from_tetra() {
+		let tetra_color = TetraColor::rgb8(100, 150, 200);
+		let color = Color::from(tetra_color);
+
+		assert_eq!(color.r, 100);
+		assert_eq!(color.g, 150);
+		assert_eq!(color.b, 200);
+		assert_eq!(color.a, 1.0);
+
+		let tetra_color = TetraColor::rgba(
+			255.0/255.0,
+			0.0/255.0,
+			128.0/255.0,
+			0.25
+		);
+		let color = Color::from(tetra_color);
+
+		assert_eq!(color.r, 255);
+		assert_eq!(color.g, 0);
+		assert_eq!(color.b, 128);
+		assert_eq!(color.a, 0.25);
+	}
+
+	#[test]
+	fn test_as_tetra() {
+		let color = Color::rgba(10, 20, 30, 0.8);
+		let tetra_color = color.as_tetra();
+
+		assert_eq!(tetra_color.r, 10.0/255.0);
+		assert_eq!(tetra_color.g, 20.0/255.0);
+		assert_eq!(tetra_color.b, 30.0/255.0);
+		assert_eq!(tetra_color.a, 0.8);
+	}
+
+	#[test]
+	fn test_into_tetra() {
+		let color = Color::rgba(10, 20, 30, 0.8);
+		let tetra_color: TetraColor = color.into();
+
+		assert_eq!(tetra_color.r, 10.0/255.0);
+		assert_eq!(tetra_color.g, 20.0/255.0);
+		assert_eq!(tetra_color.b, 30.0/255.0);
+		assert_eq!(tetra_color.a, 0.8);
+	}
+}
