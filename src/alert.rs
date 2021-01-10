@@ -1,4 +1,4 @@
-use crate::{config, Drawable, Color};
+use crate::{config, Drawable};
 use tetra::Context;
 use tetra::graphics;
 use tetra::graphics::text::Font;
@@ -38,7 +38,7 @@ impl Alert {
 					crate::WINDOW_HEIGHT as f32
 				))
 				.position(Vec2::new(0.0, 0.0))
-				.color(Color::from(config::ALERT_BACKGROUND_COLOR).into())
+				.color(config::ALERT_BACKGROUND_COLOR.as_tetra())
 		);
 
 		Ok(())
@@ -54,7 +54,7 @@ impl Alert {
 			ctx,
 			&text,
 			DrawParams::new()
-				.color(Color::from(config::ALERT_FONT_COLOR).into())
+				.color(config::ALERT_FONT_COLOR.as_tetra())
 				.position(Vec2::new(
 					(crate::WINDOW_WIDTH / 2) as f32 - bounds.width / 2.0,
 					y

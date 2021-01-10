@@ -1,5 +1,4 @@
 use tetra::graphics::Color as TetraColor;
-use crate::config;
 
 #[derive(Clone, Default)]
 pub struct Color {
@@ -10,20 +9,20 @@ pub struct Color {
 }
 
 impl Color {
-	pub fn rgb(r: u8, g: u8, b: u8) -> Color {
+	pub const fn rgb(r: u8, g: u8, b: u8) -> Color {
 		Color {
 			r, g, b,
 			a: 1.0
 		}
 	}
 
-	pub fn rgba(r: u8, g: u8, b: u8, a: f32) -> Color {
+	pub const fn rgba(r: u8, g: u8, b: u8, a: f32) -> Color {
 		Color {
 			r, g, b, a
 		}
 	}
 
-	pub fn transparent() -> Color {
+	pub const fn transparent() -> Color {
 		Color::rgba(0, 0, 0, 0.0)
 	}
 
@@ -32,12 +31,6 @@ impl Color {
 		tetra_color.a = self.a;
 
 		tetra_color
-	}
-}
-
-impl From<config::Color> for Color {
-	fn from(color: (u8, u8, u8, f32)) -> Self {
-		Color::rgba(color.0, color.1, color.2, color.3)
 	}
 }
 

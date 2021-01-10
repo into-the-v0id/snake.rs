@@ -1,4 +1,4 @@
-use crate::{config, Drawable, Color};
+use crate::{config, Drawable};
 use super::{Tile, Direction};
 use tetra::Context;
 use tetra::math::Vec2;
@@ -16,7 +16,7 @@ impl Snake {
 			head: Tile::new(
 				((config::TILE_COUNT_X - 1) as f32 * 0.5).floor() as i32,
 				((config::TILE_COUNT_Y - 1) as f32 * 0.65).floor() as i32,
-				Color::from(config::SNAKE_HEAD_COLOR)
+				config::SNAKE_HEAD_COLOR
 			),
 			tail: Vec::new(),
 			direction: Direction::Up,
@@ -60,7 +60,7 @@ impl Snake {
 			Direction::Right => x -= 1,
 		}
 
-		let tile = Tile::new(x, y, Color::from(config::SNAKE_TAIL_COLOR));
+		let tile = Tile::new(x, y, config::SNAKE_TAIL_COLOR);
 		self.tail.push(tile);
 	}
 

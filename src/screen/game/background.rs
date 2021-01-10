@@ -1,4 +1,4 @@
-use crate::{config, Drawable, Color};
+use crate::{config, Drawable};
 use tetra::Context;
 use tetra::graphics;
 use tetra::math::Vec2;
@@ -9,7 +9,7 @@ pub struct Background;
 
 impl Drawable for Background {
 	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
-		graphics::clear(ctx, Color::from(config::PLAYGROUND_WALL_COLOR).into());
+		graphics::clear(ctx, config::PLAYGROUND_WALL_COLOR.as_tetra());
 
 		let rectangle = graphics::Texture::from_rgba(ctx, 1, 1, &[255, 255, 255, 255])?;
 		graphics::draw(
@@ -24,7 +24,7 @@ impl Drawable for Background {
 					config::PLAYGROUND_WALL_WIDTH as f32,
 					config::PLAYGROUND_WALL_WIDTH as f32
 				))
-				.color(Color::from(config::PLAYGROUND_GROUND_COLOR).into())
+				.color(config::PLAYGROUND_GROUND_COLOR.as_tetra())
 		);
 
 		Ok(())

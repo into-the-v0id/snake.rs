@@ -76,7 +76,7 @@ impl GameScreen {
 	pub fn spawn_apple(&mut self) -> Option<&Tile> {
 		let apple = Tile {
 			position: self.choose_apple_position()?,
-			color: Color::from(config::APPLE_COLOR),
+			color: config::APPLE_COLOR,
 		};
 
 		self.apples.push(apple);
