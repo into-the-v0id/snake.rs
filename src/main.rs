@@ -4,7 +4,7 @@ use crate::screen::*;
 use crate::color::*;
 use crate::alert::*;
 use crate::lazy_drawable::*;
-use crate::drawable_group::*;
+use crate::drawable_collection::*;
 
 mod config;
 mod screen;
@@ -12,7 +12,7 @@ mod color;
 
 mod alert;
 mod lazy_drawable;
-mod drawable_group;
+mod drawable_collection;
 
 pub enum ScreenRefMut<'a> {
     Start(&'a mut screen::StartScreen),

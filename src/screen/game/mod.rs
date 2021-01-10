@@ -24,7 +24,7 @@ pub struct GameScreen {
 	pub background: LazyDrawable<Background>,
 	pub snake: LazyDrawable<Snake>,
 	snake_direction_queue: Vec<Direction>,
-	pub apples: LazyDrawable<DrawableGroup<Tile>>,
+	pub apples: LazyDrawable<DrawableCollection<Tile>>,
 	pub pause_alert: LazyDrawable<Alert>,
 	pub game_over_alert: LazyDrawable<GameOverAlert>,
 }
@@ -48,7 +48,7 @@ impl GameScreen {
 			),
 			snake_direction_queue: Vec::new(),
 			apples: LazyDrawable::new(
-				DrawableGroup::new(),
+				DrawableCollection::new(),
 				graphics::Canvas::new(ctx, PLAYGROUND_WIDTH as i32, PLAYGROUND_HEIGHT as i32)?,
 				Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
 			),
@@ -79,9 +79,9 @@ impl GameScreen {
 			color: Color::from(config::APPLE_COLOR),
 		};
 
-		self.apples.items.push(apple);
+		self.apples.push(apple);
 
-		self.apples.items.last()
+		self.apples.last()
 	}
 
 	pub fn choose_apple_position(&self) -> Option<Vec2<i32>> {
@@ -101,7 +101,7 @@ impl GameScreen {
 			.map(|tile| tile.position)
 			.collect();
 
-		let mut apple_positions: Vec<Vec2<i32>> = self.apples.items.iter()
+		let mut apple_positions: Vec<Vec2<i32>> = self.apples.iter()
 			.map(|tile| tile.position)
 			.collect();
 
@@ -154,7 +154,7 @@ impl GameScreen {
 		self.snake.inner = Snake::new();
 		self.snake.updated = true;
 
-		self.apples.items.clear();
+		self.apples.clear();
 		self.spawn_apple();
 		self.apples.updated = true;
 
@@ -186,7 +186,7 @@ impl Updatable for GameScreen {
 
 		let next_head_pos = self.snake.get_next_head_position();
 
-		let collided_apple_index = self.apples.items.iter()
+		let collided_apple_index = self.apples.iter()
 			.enumerate()
 			.find(|(_index, apple)| apple.position == next_head_pos)
 			.map(|(index, _apple)| index);
@@ -195,11 +195,11 @@ impl Updatable for GameScreen {
 			let new_position = self.choose_apple_position();
 
 			if let Some(new_position) = new_position {
-				let apple = self.apples.items.get_mut(index)
+				let apple = self.apples.get_mut(index)
 					.expect("Could not find apple");
 				apple.position = new_position;
 			} else {
-				self.apples.items.remove(index);
+				self.apples.remove(index);
 			}
 			self.apples.updated = true;
 
