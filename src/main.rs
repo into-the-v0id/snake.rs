@@ -3,7 +3,7 @@ use tetra::time::Timestep;
 use crate::screen::*;
 use crate::color::*;
 use crate::alert::*;
-use crate::stateful_drawable::*;
+use crate::lazy_drawable::*;
 use crate::drawable_group::*;
 
 mod config;
@@ -11,7 +11,7 @@ mod screen;
 mod color;
 
 mod alert;
-mod stateful_drawable;
+mod lazy_drawable;
 mod drawable_group;
 
 pub enum ScreenRefMut<'a> {

@@ -4,7 +4,7 @@ use tetra::math::Vec2;
 use std::ops::{Deref, DerefMut};
 
 #[derive(Clone)]
-pub struct StatefulDrawable<T>
+pub struct LazyDrawable<T>
 	where T: Drawable
 {
 	pub inner: T,
@@ -13,15 +13,15 @@ pub struct StatefulDrawable<T>
 	canvas_pos: Vec2<f32>,
 }
 
-impl <T> StatefulDrawable<T>
+impl <T> LazyDrawable<T>
 	where T: Drawable
 {
 	pub fn new<P: Into<Option<Vec2<f32>>>>(
 		obj: T,
 		canvas: graphics::Canvas,
 		canvas_pos: P
-	) -> StatefulDrawable<T> {
-		StatefulDrawable {
+	) -> LazyDrawable<T> {
+		LazyDrawable {
 			inner: obj,
 			updated: true,
 			canvas,
@@ -31,7 +31,7 @@ impl <T> StatefulDrawable<T>
 	}
 }
 
-impl <T> Deref for StatefulDrawable<T>
+impl <T> Deref for LazyDrawable<T>
 	where T: Drawable
 {
 	type Target = T;
@@ -41,7 +41,7 @@ impl <T> Deref for StatefulDrawable<T>
 	}
 }
 
-impl <T> DerefMut for StatefulDrawable<T>
+impl <T> DerefMut for LazyDrawable<T>
 	where T: Drawable
 {
 	fn deref_mut(&mut self) -> &mut Self::Target {
@@ -49,7 +49,7 @@ impl <T> DerefMut for StatefulDrawable<T>
 	}
 }
 
-impl<T> Drawable for StatefulDrawable<T>
+impl<T> Drawable for LazyDrawable<T>
 	where T: Drawable
 {
 	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {

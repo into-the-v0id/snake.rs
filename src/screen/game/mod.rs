@@ -21,12 +21,12 @@ pub struct GameScreen {
 	pub is_paused: bool,
 	pub is_game_over: bool,
 
-	pub background: StatefulDrawable<Background>,
-	pub snake: StatefulDrawable<Snake>,
+	pub background: LazyDrawable<Background>,
+	pub snake: LazyDrawable<Snake>,
 	snake_direction_queue: Vec<Direction>,
-	pub apples: StatefulDrawable<DrawableGroup<Tile>>,
-	pub pause_alert: StatefulDrawable<Alert>,
-	pub game_over_alert: StatefulDrawable<GameOverAlert>,
+	pub apples: LazyDrawable<DrawableGroup<Tile>>,
+	pub pause_alert: LazyDrawable<Alert>,
+	pub game_over_alert: LazyDrawable<GameOverAlert>,
 }
 
 impl GameScreen {
@@ -36,28 +36,28 @@ impl GameScreen {
 			is_paused: false,
 			is_game_over: false,
 
-			background: StatefulDrawable::new(
+			background: LazyDrawable::new(
 				Background,
 				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
-			snake: StatefulDrawable::new(
+			snake: LazyDrawable::new(
 				Snake::new(),
 				graphics::Canvas::new(ctx, PLAYGROUND_WIDTH as i32, PLAYGROUND_HEIGHT as i32)?,
 				Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
 			),
 			snake_direction_queue: Vec::new(),
-			apples: StatefulDrawable::new(
+			apples: LazyDrawable::new(
 				DrawableGroup::new(),
 				graphics::Canvas::new(ctx, PLAYGROUND_WIDTH as i32, PLAYGROUND_HEIGHT as i32)?,
 				Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
 			),
-			pause_alert: StatefulDrawable::new(
+			pause_alert: LazyDrawable::new(
 				Alert::try_new("Paused", "Press 'ESC' to resume")?,
 				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
-			game_over_alert: StatefulDrawable::new(
+			game_over_alert: LazyDrawable::new(
 				GameOverAlert::try_new(
 					Alert::try_new("Game over", "Press 'R' to restart")?,
 					0,
