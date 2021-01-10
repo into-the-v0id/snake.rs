@@ -21,12 +21,12 @@ pub struct GameScreen {
 	pub is_paused: bool,
 	pub is_game_over: bool,
 
-	pub background_wrapper: StatefulDrawable<Background>,
-	pub snake_wrapper: StatefulDrawable<Snake>,
+	pub background: StatefulDrawable<Background>,
+	pub snake: StatefulDrawable<Snake>,
 	snake_direction_queue: Vec<Direction>,
-	pub apples_wrapper: StatefulDrawable<DrawableGroup<Tile>>,
-	pub pause_alert_wrapper: StatefulDrawable<Alert>,
-	pub game_over_alert_wrapper: StatefulDrawable<GameOverAlert>,
+	pub apples: StatefulDrawable<DrawableGroup<Tile>>,
+	pub pause_alert: StatefulDrawable<Alert>,
+	pub game_over_alert: StatefulDrawable<GameOverAlert>,
 }
 
 impl GameScreen {
@@ -36,28 +36,28 @@ impl GameScreen {
 			is_paused: false,
 			is_game_over: false,
 
-			background_wrapper: StatefulDrawable::new(
+			background: StatefulDrawable::new(
 				Background,
 				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
-			snake_wrapper: StatefulDrawable::new(
+			snake: StatefulDrawable::new(
 				Snake::new(),
 				graphics::Canvas::new(ctx, PLAYGROUND_WIDTH as i32, PLAYGROUND_HEIGHT as i32)?,
 				Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
 			),
 			snake_direction_queue: Vec::new(),
-			apples_wrapper: StatefulDrawable::new(
+			apples: StatefulDrawable::new(
 				DrawableGroup::new(),
 				graphics::Canvas::new(ctx, PLAYGROUND_WIDTH as i32, PLAYGROUND_HEIGHT as i32)?,
 				Vec2::new(config::PLAYGROUND_WALL_WIDTH as f32, config::PLAYGROUND_WALL_WIDTH as f32)
 			),
-			pause_alert_wrapper: StatefulDrawable::new(
+			pause_alert: StatefulDrawable::new(
 				Alert::try_new("Paused", "Press 'ESC' to resume")?,
 				graphics::Canvas::new(ctx, WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)?,
 				None
 			),
-			game_over_alert_wrapper: StatefulDrawable::new(
+			game_over_alert: StatefulDrawable::new(
 				GameOverAlert::try_new(
 					Alert::try_new("Game over", "Press 'R' to restart")?,
 					0,
@@ -79,9 +79,9 @@ impl GameScreen {
 			color: Color::from(config::APPLE_COLOR),
 		};
 
-		self.apples_wrapper.inner.items.push(apple);
+		self.apples.items.push(apple);
 
-		self.apples_wrapper.inner.items.last()
+		self.apples.items.last()
 	}
 
 	pub fn choose_apple_position(&self) -> Option<Vec2<i32>> {
@@ -97,17 +97,17 @@ impl GameScreen {
 	}
 
 	pub fn all_possible_apple_positions(&self) -> Vec<Vec2<i32>> {
-		let mut tail_positions: Vec<Vec2<i32>> = self.snake_wrapper.inner.tail.iter()
+		let mut tail_positions: Vec<Vec2<i32>> = self.snake.tail.iter()
 			.map(|tile| tile.position)
 			.collect();
 
-		let mut apple_positions: Vec<Vec2<i32>> = self.apples_wrapper.inner.items.iter()
+		let mut apple_positions: Vec<Vec2<i32>> = self.apples.items.iter()
 			.map(|tile| tile.position)
 			.collect();
 
 		let mut blacklist = vec![
-			self.snake_wrapper.inner.head.position,
-			self.snake_wrapper.inner.get_next_head_position()
+			self.snake.head.position,
+			self.snake.get_next_head_position()
 		];
 		blacklist.append(&mut tail_positions);
 		blacklist.append(&mut apple_positions);
@@ -142,8 +142,8 @@ impl GameScreen {
 		self.is_game_over = true;
 		self.is_locked = true;
 
-		self.game_over_alert_wrapper.inner.score = self.snake_wrapper.inner.tail.len() as u16;
-		self.game_over_alert_wrapper.updated = true;
+		self.game_over_alert.score = self.snake.tail.len() as u16;
+		self.game_over_alert.updated = true;
 	}
 
 	pub fn restart(&mut self) {
@@ -151,15 +151,15 @@ impl GameScreen {
 		self.is_paused = false;
 		self.is_locked = false;
 
-		self.snake_wrapper.inner = Snake::new();
-		self.snake_wrapper.updated = true;
+		self.snake.inner = Snake::new();
+		self.snake.updated = true;
 
-		self.apples_wrapper.inner.items.clear();
+		self.apples.items.clear();
 		self.spawn_apple();
-		self.apples_wrapper.updated = true;
+		self.apples.updated = true;
 
-		self.game_over_alert_wrapper.inner.score = 0;
-		self.game_over_alert_wrapper.updated = true;
+		self.game_over_alert.score = 0;
+		self.game_over_alert.updated = true;
 	}
 }
 
@@ -172,21 +172,21 @@ impl Updatable for GameScreen {
 		if ! self.snake_direction_queue.is_empty() {
 			let dir_match = self.snake_direction_queue.iter().enumerate()
 				.rfind(|(_index, &dir)| {
-					dir != Direction::opposite(&self.snake_wrapper.inner.direction)
-						&& dir != self.snake_wrapper.inner.direction
+					dir != Direction::opposite(&self.snake.direction)
+						&& dir != self.snake.direction
 				});
 
 			if let Some((index, &dir)) = dir_match {
-				self.snake_wrapper.inner.direction = dir;
+				self.snake.direction = dir;
 				self.snake_direction_queue = Vec::from(&self.snake_direction_queue[(index + 1)..]);
 			} else {
 				self.snake_direction_queue.clear();
 			}
 		}
 
-		let next_head_pos = self.snake_wrapper.inner.get_next_head_position();
+		let next_head_pos = self.snake.get_next_head_position();
 
-		let collided_apple_index = self.apples_wrapper.inner.items.iter()
+		let collided_apple_index = self.apples.items.iter()
 			.enumerate()
 			.find(|(_index, apple)| apple.position == next_head_pos)
 			.map(|(index, _apple)| index);
@@ -195,19 +195,19 @@ impl Updatable for GameScreen {
 			let new_position = self.choose_apple_position();
 
 			if let Some(new_position) = new_position {
-				let apple = self.apples_wrapper.inner.items.get_mut(index)
+				let apple = self.apples.items.get_mut(index)
 					.expect("Could not find apple");
 				apple.position = new_position;
 			} else {
-				self.apples_wrapper.inner.items.remove(index);
+				self.apples.items.remove(index);
 			}
-			self.apples_wrapper.updated = true;
+			self.apples.updated = true;
 
-			self.snake_wrapper.inner.grow_tail();
-			self.snake_wrapper.updated = true;
+			self.snake.grow_tail();
+			self.snake.updated = true;
 		}
 
-		let mut moved_snake = self.snake_wrapper.inner.clone();
+		let mut moved_snake = self.snake.inner.clone();
 		moved_snake.move_forward();
 
 		if moved_snake.head_collides() {
@@ -215,8 +215,8 @@ impl Updatable for GameScreen {
 			return;
 		}
 
-		self.snake_wrapper.inner = moved_snake;
-		self.snake_wrapper.updated = true;
+		self.snake.inner = moved_snake;
+		self.snake.updated = true;
 	}
 }
 
@@ -224,11 +224,11 @@ impl Drawable for GameScreen {
 	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
 		graphics::clear(ctx, Color::rgba(0, 0, 0, 1.0).into());
 
-		self.background_wrapper.draw(ctx)?;
-		self.apples_wrapper.draw(ctx)?;
-		self.snake_wrapper.draw(ctx)?;
-		if self.is_game_over { self.game_over_alert_wrapper.draw(ctx)?; }
-		if self.is_paused { self.pause_alert_wrapper.draw(ctx)?; }
+		self.background.draw(ctx)?;
+		self.apples.draw(ctx)?;
+		self.snake.draw(ctx)?;
+		if self.is_game_over { self.game_over_alert.draw(ctx)?; }
+		if self.is_paused { self.pause_alert.draw(ctx)?; }
 
 		Ok(())
 	}
