@@ -1,4 +1,5 @@
-use crate::{Drawable, Color};
+use crate::color::Color;
+use crate::screen::Drawable;
 use tetra::{graphics, Context};
 use tetra::math::Vec2;
 use std::ops::{Deref, DerefMut};

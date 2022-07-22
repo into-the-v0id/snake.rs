@@ -1,14 +1,18 @@
-use tetra::{Context, Event};
+use tetra::{Context, Event, graphics};
 use super::{Screen, Drawable, Updatable, EventHandler};
-use crate::*;
-use self::background::*;
-use self::tile::*;
-use self::snake::*;
-use self::direction::*;
-use self::game_over_alert::*;
 use tetra::math::Vec2;
 use rand::Rng;
 use tetra::input::{MouseButton, Key};
+use crate::alert::Alert;
+use crate::drawable_collection::DrawableCollection;
+use crate::lazy_drawable::LazyDrawable;
+use background::Background;
+use direction::Direction;
+use game_over_alert::GameOverAlert;
+use snake::Snake;
+use tile::Tile;
+use crate::color::Color;
+use crate::{config, CurrentScreen, PLAYGROUND_HEIGHT, PLAYGROUND_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH};
 
 mod background;
 mod tile;

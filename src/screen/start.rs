@@ -1,6 +1,9 @@
 use tetra::{graphics, Context, Event};
 use super::{Screen, Drawable, Updatable, EventHandler};
-use crate::{CurrentScreen, ScreenName, Alert, LazyDrawable, WINDOW_WIDTH, WINDOW_HEIGHT, Color};
+use crate::{CurrentScreen, ScreenName, WINDOW_WIDTH, WINDOW_HEIGHT};
+use crate::alert::Alert;
+use crate::color::Color;
+use crate::lazy_drawable::LazyDrawable;
 use tetra::input::{Key, MouseButton};
 
 pub struct StartScreen {

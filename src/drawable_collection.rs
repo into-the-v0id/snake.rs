@@ -1,4 +1,4 @@
-use crate::Drawable;
+use crate::screen::Drawable;
 use tetra::Context;
 use std::ops::{Deref, DerefMut};
 

@@ -1,6 +1,8 @@
 use tetra::math::Vec2;
 use tetra::{graphics, Context};
-use crate::{config, Drawable, Color};
+use crate::config;
+use crate::screen::Drawable;
+use crate::color::Color;
 
 #[derive(Clone)]
 pub struct Tile {

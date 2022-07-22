@@ -1,10 +1,7 @@
 use tetra::{graphics, Context, ContextBuilder, State as TetraState, Event};
 use tetra::time::Timestep;
-use crate::screen::*;
-use crate::color::*;
-use crate::alert::*;
-use crate::lazy_drawable::*;
-use crate::drawable_collection::*;
+use crate::screen::Screen;
+use crate::color::Color;
 
 mod config;
 mod screen;
@@ -122,5 +119,5 @@ fn main() -> tetra::Result {
         .timestep(Timestep::Fixed(3.0))
         .show_mouse(true)
         .build()?
-        .run(|ctx: &mut Context| State::factory(ctx))
+        .run(State::factory)
 }

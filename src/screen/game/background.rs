@@ -1,4 +1,5 @@
-use crate::{config, Drawable};
+use crate::config;
+use crate::screen::Drawable;
 use tetra::Context;
 use tetra::graphics;
 use tetra::math::Vec2;
