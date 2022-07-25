@@ -65,26 +65,13 @@ impl Snake {
 		self.tail.push(tile);
 	}
 
-	pub fn head_collides(&self) -> bool {
-		self.head_is_out_of_bounds() || self.head_is_on_tail()
+	pub fn position_collides(&self, position: &Vec2<i32>) -> bool {
+		position == &self.head.position || self.position_is_on_tail(position)
 	}
 
-	fn head_is_out_of_bounds(&self) -> bool {
-		let x = self.head.position.x;
-		let y = self.head.position.y;
-
-		x < 0 || x > (config::TILE_COUNT_X - 1) as i32
-			|| y < 0 || y > (config::TILE_COUNT_Y - 1) as i32
-	}
-
-	fn head_is_on_tail(&self) -> bool {
-		for tile in self.tail.iter() {
-			if tile.position == self.head.position {
-				return true;
-			}
-		}
-
-		false
+	fn position_is_on_tail(&self, position: &Vec2<i32>) -> bool {
+		self.tail.iter()
+			.any(|tile| &tile.position == position)
 	}
 }
 

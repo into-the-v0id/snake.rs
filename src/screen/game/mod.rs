@@ -130,6 +130,11 @@ impl GameScreen {
 		possible_positions
 	}
 
+	fn position_is_out_of_bounds(&self, position: &Vec2<i32>) -> bool {
+		position.x < 0 || position.x > (config::TILE_COUNT_X - 1) as i32
+			|| position.y < 0 || position.y > (config::TILE_COUNT_Y - 1) as i32
+	}
+
 	pub fn pause(&mut self) {
 		self.is_paused = true;
 		self.is_locked = true;
@@ -206,15 +211,13 @@ impl Updatable for GameScreen {
 			self.snake.updated = true;
 		}
 
-		let mut moved_snake = self.snake.inner.clone();
-		moved_snake.move_forward();
-
-		if moved_snake.head_collides() {
+		if self.position_is_out_of_bounds(&next_head_pos)
+			|| self.snake.position_collides(&next_head_pos) {
 			self.game_over();
 			return;
 		}
 
-		self.snake.inner = moved_snake;
+		self.snake.move_forward();
 		self.snake.updated = true;
 	}
 }
