@@ -101,20 +101,18 @@ impl GameScreen {
 	}
 
 	pub fn all_possible_apple_positions(&self) -> Vec<Vec2<i32>> {
-		let mut tail_positions: Vec<Vec2<i32>> = self.snake.tail.iter()
-			.map(|tile| tile.position)
-			.collect();
+		let tail_positions = self.snake.tail.iter()
+			.map(|tile| tile.position);
 
-		let mut apple_positions: Vec<Vec2<i32>> = self.apples.iter()
-			.map(|tile| tile.position)
-			.collect();
+		let apple_positions = self.apples.iter()
+			.map(|tile| tile.position);
 
 		let mut blacklist = vec![
 			self.snake.head.position,
 			self.snake.get_next_head_position()
 		];
-		blacklist.append(&mut tail_positions);
-		blacklist.append(&mut apple_positions);
+		blacklist.extend(tail_positions);
+		blacklist.extend(apple_positions);
 
 		let mut possible_positions: Vec<Vec2<i32>> = Vec::new();
 		for x in 0..config::TILE_COUNT_X {
@@ -176,8 +174,7 @@ impl Updatable for GameScreen {
 		if ! self.snake_direction_queue.is_empty() {
 			let dir_match = self.snake_direction_queue.iter().enumerate()
 				.rfind(|(_index, &dir)| {
-					dir != Direction::opposite(&self.snake.direction)
-						&& dir != self.snake.direction
+					dir != self.snake.direction && dir != self.snake.direction.opposite()
 				});
 
 			if let Some((index, &dir)) = dir_match {
@@ -191,9 +188,7 @@ impl Updatable for GameScreen {
 		let next_head_pos = self.snake.get_next_head_position();
 
 		let collided_apple_index = self.apples.iter()
-			.enumerate()
-			.find(|(_index, apple)| apple.position == next_head_pos)
-			.map(|(index, _apple)| index);
+			.position(|apple| apple.position == next_head_pos);
 
 		if let Some(index) = collided_apple_index {
 			let new_position = self.choose_apple_position();
