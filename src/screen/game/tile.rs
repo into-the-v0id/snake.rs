@@ -19,22 +19,21 @@ impl Tile {
 	}
 }
 
+const TILE_SIZE: f32 = config::TILE_SIZE as f32 * 0.9;
+const MARGIN_SIZE: f32 = (config::TILE_SIZE as f32 - TILE_SIZE) / 2.0;
+
 impl Drawable for Tile {
 	fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
 		let rectangle = graphics::Texture::from_rgba(ctx, 1, 1, &[255, 255, 255, 255])?;
-
-		let space_size = config::TILE_SIZE as f32;
-		let tile_size = (space_size * 0.9).round();
-		let margin_size = ((space_size - tile_size) / 2.0).round();
 
 		graphics::draw(
 			ctx,
 			&rectangle,
 			graphics::DrawParams::new()
-				.scale(Vec2::new(tile_size, tile_size))
+				.scale(Vec2::new(TILE_SIZE, TILE_SIZE))
 				.position(Vec2::new(
-					(self.position.x * config::TILE_SIZE as i32) as f32 + margin_size,
-					(self.position.y * config::TILE_SIZE as i32) as f32 + margin_size
+					(self.position.x * config::TILE_SIZE as i32) as f32 + MARGIN_SIZE,
+					(self.position.y * config::TILE_SIZE as i32) as f32 + MARGIN_SIZE,
 				))
 				.color(self.color.as_tetra())
 		);
