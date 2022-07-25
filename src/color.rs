@@ -45,10 +45,10 @@ impl From<TetraColor> for Color {
 	}
 }
 
-impl Into<TetraColor> for Color {
-	fn into(self) -> TetraColor {
-		let mut tetra_color = TetraColor::rgb8(self.r, self.g, self.b);
-		tetra_color.a = self.a;
+impl From<Color> for TetraColor {
+	fn from(color: Color) -> Self {
+		let mut tetra_color = TetraColor::rgb8(color.r, color.g, color.b);
+		tetra_color.a = color.a;
 
 		tetra_color
 	}
