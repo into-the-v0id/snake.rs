@@ -72,7 +72,7 @@ impl GameScreen {
 			),
 		};
 
-		state.spawn_apple();
+		state.reset();
 
 		Ok(state)
 	}
@@ -158,15 +158,34 @@ impl GameScreen {
 		self.is_paused = false;
 		self.is_locked = false;
 
-		self.snake.inner = Snake::new();
-		self.snake.updated = true;
-
-		self.apples.clear();
-		self.spawn_apple();
-		self.apples.updated = true;
+		self.reset();
 
 		self.game_over_alert.score = 0;
 		self.game_over_alert.updated = true;
+	}
+
+	fn reset(&mut self) {
+		self.snake.inner = Snake::new();
+		let snake_start_size = std::env::var("SNAKE_START_SIZE")
+			.unwrap_or("0".to_string())
+			.parse::<u32>()
+			.expect("Invalid SNAKE_START_SIZE");
+		for _ in 0..snake_start_size {
+			self.snake.grow_tail();
+		}
+		self.snake.updated = true;
+
+		self.apples.clear();
+		let apple_count = std::env::var("APPLE_COUNT")
+			.unwrap_or("1".to_string())
+			.parse::<u32>()
+			.expect("Invalid APPLE_COUNT");
+		for _ in 0..apple_count {
+			if self.spawn_apple().is_none() {
+				break;
+			}
+		}
+		self.apples.updated = true;
 	}
 }
 
