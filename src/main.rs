@@ -12,17 +12,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use tetra::{graphics, Context, ContextBuilder, State as TetraState, Event};
-use tetra::time::Timestep;
-use crate::screen::Screen;
 use crate::color::Color;
+use crate::screen::Screen;
+use tetra::time::Timestep;
+use tetra::{graphics, Context, ContextBuilder, Event, State as TetraState};
 
-mod config;
-mod screen;
-mod color;
 mod alert;
-mod lazy_drawable;
+mod color;
+mod config;
 mod drawable_collection;
+mod lazy_drawable;
+mod screen;
 
 pub enum ScreenRefMut<'a> {
     Start(&'a mut screen::StartScreen),
@@ -78,7 +78,7 @@ impl State {
             screens: Screens {
                 start: screen::StartScreen::try_new(ctx)?,
                 game: screen::GameScreen::try_new(ctx)?,
-            }
+            },
         })
     }
 
@@ -93,8 +93,7 @@ impl State {
 impl TetraState for State {
     fn update(&mut self, _ctx: &mut Context) -> tetra::Result {
         let mut current_screen = self.current_screen;
-        self.current_screen_mut()
-            .update(&mut current_screen);
+        self.current_screen_mut().update(&mut current_screen);
         self.current_screen = current_screen;
 
         Ok(())
@@ -103,16 +102,14 @@ impl TetraState for State {
     fn draw(&mut self, ctx: &mut Context) -> tetra::Result {
         graphics::clear(ctx, Color::rgba(0, 0, 0, 1.0).into());
 
-        self.current_screen_mut()
-            .draw(ctx)?;
+        self.current_screen_mut().draw(ctx)?;
 
         Ok(())
     }
 
     fn event(&mut self, _ctx: &mut Context, event: Event) -> tetra::Result {
         let mut current_screen = self.current_screen;
-        self.current_screen_mut()
-            .event(&mut current_screen, event);
+        self.current_screen_mut().event(&mut current_screen, event);
         self.current_screen = current_screen;
 
         Ok(())
@@ -125,11 +122,7 @@ const WINDOW_WIDTH: u16 = PLAYGROUND_WIDTH + config::PLAYGROUND_WALL_WIDTH * 2;
 const WINDOW_HEIGHT: u16 = PLAYGROUND_HEIGHT + config::PLAYGROUND_WALL_WIDTH * 2;
 
 fn main() -> tetra::Result {
-    ContextBuilder::new(
-        "Snake",
-        WINDOW_WIDTH as i32,
-        WINDOW_HEIGHT as i32
-    )
+    ContextBuilder::new("Snake", WINDOW_WIDTH as i32, WINDOW_HEIGHT as i32)
         .timestep(Timestep::Fixed(3.0))
         .show_mouse(true)
         .build()?
