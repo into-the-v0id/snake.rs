@@ -27,7 +27,7 @@ impl Snake {
 	pub fn move_forward(&mut self) {
 		let head = &mut self.head;
 		let mut tiles = self.tail.iter_mut().rev().peekable();
-		while let Some(mut tile) = tiles.next() {
+		while let Some(tile) = tiles.next() {
 			let prev_tile = tiles.peek().unwrap_or(&head);
 			tile.position = prev_tile.position;
 		}

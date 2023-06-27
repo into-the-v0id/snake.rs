@@ -259,25 +259,24 @@ impl EventHandler for GameScreen {
 	fn event(&mut self, _screen: &mut CurrentScreen, event: Event) {
 		if ! self.is_locked {
 			match event {
-				Event::KeyPressed { key } => {
-					match key {
-						Key::W | Key::Up => {
-							self.snake_direction_queue.push(Direction::Up);
-						}
-						Key::S | Key::Down => {
-							self.snake_direction_queue.push(Direction::Down);
-						}
-						Key::A | Key::Left => {
-							self.snake_direction_queue.push(Direction::Left);
-						}
-						Key::D | Key::Right => {
-							self.snake_direction_queue.push(Direction::Right);
-						}
-						Key::Escape | Key::P => { self.pause(); }
-						_ => {}
-					}
+				Event::KeyPressed { key: Key::W | Key::Up } => {
+					self.snake_direction_queue.push(Direction::Up);
 				}
-				Event::FocusLost => { self.pause(); }
+				Event::KeyPressed { key: Key::S | Key::Down } => {
+					self.snake_direction_queue.push(Direction::Down);
+				}
+				Event::KeyPressed { key: Key::A | Key::Left } => {
+					self.snake_direction_queue.push(Direction::Left);
+				}
+				Event::KeyPressed { key: Key::D | Key::Right } => {
+					self.snake_direction_queue.push(Direction::Right);
+				}
+				Event::KeyPressed { key: Key::Escape | Key::P } => {
+					self.pause();
+				}
+				Event::FocusLost => {
+					self.pause();
+				}
 				_ => {}
 			}
 
@@ -286,19 +285,11 @@ impl EventHandler for GameScreen {
 
 		if self.is_paused {
 			match event {
-				Event::KeyPressed { key } => {
-					match key {
-						Key::Escape | Key::P | Key::Space | Key::Enter | Key::NumPadEnter => {
-							self.resume();
-						}
-						_ => {}
-					}
+				Event::KeyPressed { key: Key::Escape | Key::P | Key::Space | Key::Enter | Key::NumPadEnter } => {
+					self.resume();
 				}
-				Event::MouseButtonPressed { button } => {
-					match button {
-						MouseButton::Left => { self.resume(); }
-						_ => {}
-					}
+				Event::MouseButtonPressed {button: MouseButton::Left } => {
+					self.resume();
 				}
 				_ => {}
 			}
@@ -308,23 +299,16 @@ impl EventHandler for GameScreen {
 
 		if self.is_game_over {
 			match event {
-				Event::KeyPressed { key } => {
-					match key {
-						Key::R | Key::Space | Key::Enter | Key::NumPadEnter => {
-							self.restart();
-						}
-						_ => {}
-					}
+				Event::KeyPressed { key: Key::R | Key::Space | Key::Enter | Key::NumPadEnter } => {
+					self.restart();
 				}
-				Event::MouseButtonPressed { button } => {
-					match button {
-						MouseButton::Left => { self.restart(); }
-						_ => {}
-					}
+				Event::MouseButtonPressed { button: MouseButton::Left } => {
+					self.restart();
 				}
 				_ => {}
 			}
 
+			#[allow(clippy::needless_return)]
 			return;
 		}
 	}

@@ -41,21 +41,11 @@ impl Updatable for StartScreen {
 impl EventHandler for StartScreen {
 	fn event(&mut self, screen: &mut CurrentScreen, event: Event) {
 		match event {
-			Event::KeyPressed { key } => {
-				match key {
-					Key::Space | Key::Enter | Key::NumPadEnter => {
-						screen.use_screen(ScreenName::Game);
-					}
-					_ => {}
-				}
+			Event::KeyPressed { key: Key::Space | Key::Enter | Key::NumPadEnter } => {
+				screen.use_screen(ScreenName::Game);
 			}
-			Event::MouseButtonPressed { button } => {
-				match button {
-					MouseButton::Left => {
-						screen.use_screen(ScreenName::Game);
-					}
-					_ => {}
-				}
+			Event::MouseButtonPressed { button: MouseButton::Left } => {
+				screen.use_screen(ScreenName::Game);
 			}
 			_ => {}
 		};
